@@ -75,6 +75,7 @@
               type="password"
               placeholder="Retype Password"
               v-model="confirmPassword"
+              minlength="6"
               :class="{ 'input-error': passwordError }"
               required
             />
@@ -86,9 +87,9 @@
           <div class="input-box">
             <select required v-model="role">
               <option value="" disabled selected>Select Role</option>
-              <option value="student">Student</option>
-              <option value="officer">Officer</option>
-              <option value="admin">Admin</option>
+              <option value="Student">Student</option>
+              <option value="Officer">Officer</option>
+              <option value="Admin">Admin</option>
             </select>
           </div>
 
@@ -116,11 +117,13 @@
 import { ref, watch } from 'vue';
 import logo from 'src/assets/logo.png';
 import 'boxicons/css/boxicons.min.css';
+import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores/auth-store';
 import { type UserRegisterDtoRoleEnum } from 'src/services/sdk';
+
 const loginUsername = ref('');
 const loginPassword = ref('');
-
+const $q = useQuasar();
 const authStore = useAuthStore();
 const isLogin = ref(true);
 const password = ref('');
@@ -144,23 +147,98 @@ watch([password, confirmPassword], () => {
     passwordError.value = '';
   }
 });
+
 async function login() {
-  const user = await authStore.login({
-    username: loginUsername.value,
-    password: loginPassword.value,
-  });
-  console.log(user);
+  try {
+    const user = await authStore.login({
+      username: loginUsername.value,
+      password: loginPassword.value,
+    });
+    console.log(user);
+
+    $q.notify({
+      type: 'positive',
+      message: 'Login successful!',
+      position: 'top',
+      timeout: 2000,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error
+      ? error.message
+      : 'Login failed';
+
+      $q.notify({
+      type: 'negative',
+      message: errorMessage,
+      position: 'top',
+      timeout: 3000,
+    });
+  }
 }
 
 async function register() {
-  await authStore.register({
-    firstName: firstName.value,
-    lastName: lastName.value,
-    email: email.value,
-    password: password.value,
-    role: role.value as UserRegisterDtoRoleEnum,
-    username: userName.value,
-  });
+  try {
+    if (password.value !== confirmPassword.value) {
+      $q.notify({
+        type: 'negative',
+        message: 'Passwords do not match',
+        position: 'top',
+        timeout: 3000,
+      });
+      return;
+    }
+
+    await authStore.register({
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      password: password.value,
+      role: role.value as UserRegisterDtoRoleEnum,
+      username: userName.value,
+    });
+
+    $q.notify({
+      type: 'positive',
+      message: 'Registration successful! Your account is pending approval.',
+      position: 'top',
+      timeout: 5000,
+      icon: 'check_circle',
+    });
+
+    // Clear form
+    firstName.value = '';
+    lastName.value = '';
+    email.value = '';
+    userName.value = '';
+    password.value = '';
+    confirmPassword.value = '';
+    role.value = '';
+
+    // Switch to login after 2 seconds
+    setTimeout(() => {
+      isLogin.value = true;
+    }, 2000);
+
+  } catch (error: unknown) {
+    let errorMessage = 'Registration failed. Please try again.';
+
+    if (typeof error === 'object' && error !== null && 'response' in error) {
+      const axiosError = error as { response?: { data?: { message?: string } } };
+      if (axiosError.response?.data?.message) {
+        errorMessage = axiosError.response.data.message;
+      }
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    $q.notify({
+      type: 'negative',
+      message: errorMessage,
+      position: 'top',
+      timeout: 5000,
+      icon: 'error',
+    });
+  }
 }
 </script>
 
