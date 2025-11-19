@@ -102,8 +102,9 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
-    },
+      plugins: [
+        'Notify'
+      ],
 
     // animations: 'all', // --- includes all animations
     // https://v2.quasar.dev/options/animations
@@ -220,4 +221,4 @@ export default defineConfig((/* ctx */) => {
       extraScripts: []
     }
   }
-});
+}})
