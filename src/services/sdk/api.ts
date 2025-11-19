@@ -26,6 +26,31 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerM
 /**
  * 
  * @export
+ * @interface LoginResponseDto
+ */
+export interface LoginResponseDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof LoginResponseDto
+     */
+    'message': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LoginResponseDto
+     */
+    'accessToken': string;
+    /**
+     * 
+     * @type {UserInfoDto}
+     * @memberof LoginResponseDto
+     */
+    'user': UserInfoDto;
+}
+/**
+ * 
+ * @export
  * @interface OfficerDto
  */
 export interface OfficerDto {
@@ -53,6 +78,74 @@ export interface OfficerDto {
      * @memberof OfficerDto
      */
     'email': string;
+}
+/**
+ * 
+ * @export
+ * @interface RegisterResponseDto
+ */
+export interface RegisterResponseDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof RegisterResponseDto
+     */
+    'message': string;
+    /**
+     * 
+     * @type {RegistrationInfoDto}
+     * @memberof RegisterResponseDto
+     */
+    'user': RegistrationInfoDto;
+}
+/**
+ * 
+ * @export
+ * @interface RegistrationInfoDto
+ */
+export interface RegistrationInfoDto {
+    /**
+     * 
+     * @type {number}
+     * @memberof RegistrationInfoDto
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegistrationInfoDto
+     */
+    'firstName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegistrationInfoDto
+     */
+    'lastName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegistrationInfoDto
+     */
+    'username': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegistrationInfoDto
+     */
+    'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegistrationInfoDto
+     */
+    'role': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegistrationInfoDto
+     */
+    'status': string;
 }
 /**
  * 
@@ -122,6 +215,37 @@ export interface StudentRegistrationDto {
      * @memberof StudentRegistrationDto
      */
     'email': string;
+}
+/**
+ * 
+ * @export
+ * @interface UserInfoDto
+ */
+export interface UserInfoDto {
+    /**
+     * 
+     * @type {number}
+     * @memberof UserInfoDto
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserInfoDto
+     */
+    'username': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserInfoDto
+     */
+    'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserInfoDto
+     */
+    'role': string;
 }
 /**
  * 
@@ -525,7 +649,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async authControllerLogin(userLoginDto: UserLoginDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async authControllerLogin(userLoginDto: UserLoginDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.authControllerLogin(userLoginDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.authControllerLogin']?.[localVarOperationServerIndex]?.url;
@@ -537,7 +661,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async authControllerRegister(userRegisterDto: UserRegisterDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async authControllerRegister(userRegisterDto: UserRegisterDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RegisterResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.authControllerRegister(userRegisterDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.authControllerRegister']?.[localVarOperationServerIndex]?.url;
@@ -567,7 +691,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        authControllerLogin(userLoginDto: UserLoginDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        authControllerLogin(userLoginDto: UserLoginDto, options?: RawAxiosRequestConfig): AxiosPromise<LoginResponseDto> {
             return localVarFp.authControllerLogin(userLoginDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -576,7 +700,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        authControllerRegister(userRegisterDto: UserRegisterDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        authControllerRegister(userRegisterDto: UserRegisterDto, options?: RawAxiosRequestConfig): AxiosPromise<RegisterResponseDto> {
             return localVarFp.authControllerRegister(userRegisterDto, options).then((request) => request(axios, basePath));
         },
     };
@@ -671,14 +795,14 @@ export const LiabilityApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
-         * @param {number} id 
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        liabilityControllerFindOne: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        liabilityControllerFindOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('liabilityControllerFindOne', 'id', id)
-            const localVarPath = `/liability`
+            const localVarPath = `/liability/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -700,6 +824,86 @@ export const LiabilityApiAxiosParamCreator = function (configuration?: Configura
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        liabilityControllerSoftDelete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('liabilityControllerSoftDelete', 'id', id)
+            const localVarPath = `/liability/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        liabilityControllerUpdate: async (id: string, body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('liabilityControllerUpdate', 'id', id)
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('liabilityControllerUpdate', 'body', body)
+            const localVarPath = `/liability/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -730,14 +934,39 @@ export const LiabilityApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {number} id 
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async liabilityControllerFindOne(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async liabilityControllerFindOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.liabilityControllerFindOne(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LiabilityApi.liabilityControllerFindOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async liabilityControllerSoftDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.liabilityControllerSoftDelete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LiabilityApi.liabilityControllerSoftDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async liabilityControllerUpdate(id: string, body: object, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.liabilityControllerUpdate(id, body, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LiabilityApi.liabilityControllerUpdate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -761,12 +990,31 @@ export const LiabilityApiFactory = function (configuration?: Configuration, base
         },
         /**
          * 
-         * @param {number} id 
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        liabilityControllerFindOne(id: number, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        liabilityControllerFindOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.liabilityControllerFindOne(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        liabilityControllerSoftDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.liabilityControllerSoftDelete(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        liabilityControllerUpdate(id: string, body: object, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.liabilityControllerUpdate(id, body, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -791,13 +1039,36 @@ export class LiabilityApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof LiabilityApi
      */
-    public liabilityControllerFindOne(id: number, options?: RawAxiosRequestConfig) {
+    public liabilityControllerFindOne(id: string, options?: RawAxiosRequestConfig) {
         return LiabilityApiFp(this.configuration).liabilityControllerFindOne(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof LiabilityApi
+     */
+    public liabilityControllerSoftDelete(id: string, options?: RawAxiosRequestConfig) {
+        return LiabilityApiFp(this.configuration).liabilityControllerSoftDelete(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {object} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof LiabilityApi
+     */
+    public liabilityControllerUpdate(id: string, body: object, options?: RawAxiosRequestConfig) {
+        return LiabilityApiFp(this.configuration).liabilityControllerUpdate(id, body, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

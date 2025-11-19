@@ -120,7 +120,7 @@ import 'boxicons/css/boxicons.min.css';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores/auth-store';
 import { type UserRegisterDtoRoleEnum } from 'src/services/sdk';
-
+import { useRouter } from 'vue-router';
 const loginUsername = ref('');
 const loginPassword = ref('');
 const $q = useQuasar();
@@ -172,6 +172,15 @@ async function login() {
       message: errorMessage,
       position: 'top',
       timeout: 3000,
+const $router = useRouter();
+async function login() {
+  const response = await authStore.login({
+    username: loginUsername.value,
+    password: loginPassword.value,
+  });
+  if (/^admin$/i.test(response.user?.role)) {
+    await $router.replace({
+      name: 'admin-dashboard',
     });
   }
 }
