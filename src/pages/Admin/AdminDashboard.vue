@@ -22,7 +22,7 @@
               <div class="text-caption text-grey-7">Manage user accounts and permissions.</div>
             </q-card-section>
             <q-card-actions align="left">
-              <q-btn color="red-8" label="Manage Users" flat />
+              <q-btn color="red-8" label="Manage Users" flat @click="goToUserManagement" />
             </q-card-actions>
           </q-card>
         </div>
@@ -30,7 +30,7 @@
           class="dashboard-card q-mb-md"
           clickable
           v-ripple
-          @click="selectCard('System Settings')"
+          @click="goToUserManagement"
         ></q-card>
         <div class="col-12 col-md-4"></div>
 
@@ -51,17 +51,25 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'AdminDashboard',
   setup() {
     const leftDrawer = ref(false);
+    const router = useRouter();
+
+    function goToUserManagement() {
+      void router.push('/admin-users')
+    }
+
+
 
     function selectCard(name: string) {
       alert(`You clicked ${name}!`);
     }
 
-    return { leftDrawer, selectCard };
+    return { leftDrawer, selectCard, goToUserManagement };
   },
 });
 </script>

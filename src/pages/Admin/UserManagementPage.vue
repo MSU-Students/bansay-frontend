@@ -4,6 +4,14 @@
       <div class="management-content">
         <q-card class="users-section">
           <q-card-section>
+            <q-btn
+              label="Back"
+              color="primary"
+              flat
+              icon="arrow_back"
+              class="q-mb-md"
+              @click="goBack"
+            />
             <div class="section-header">
               <div class="text-h5 text-primary">System Users</div>
               <div class="header-controls">
@@ -56,8 +64,14 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const searchQuery = ref('')
+const router = useRouter()
+
+function goBack() {
+  void router.push('/admin-dashboard')
+}
 
 const columns = [
   {

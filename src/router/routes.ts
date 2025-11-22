@@ -28,6 +28,11 @@ const routes: RouteRecordRaw[] = [
         path: 'admin-dashboard',
         component: () => import('pages/Admin/AdminDashboard.vue'),
       },
+
+      {
+        path: 'admin-users',
+        component: () => import('pages/Admin/UserManagementPage.vue'),
+      },
     ],
   },
 
