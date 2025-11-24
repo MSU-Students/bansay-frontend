@@ -96,20 +96,24 @@ import '../../assets/styles/auth.css';
 import { useRouter } from 'vue-router';
 import { QBtn, QForm, QIcon } from 'quasar';
 import logo from '../../assets/logo.png';
-// import { type UserRegisterDtoRoleEnum } from 'src/services/sdk'; // uncomment when done with ui testing
-//import { useAuthStore } from 'src/stores/auth-store'; // uncomment when done with ui testing
-// import { useQuasar } from 'quasar'; // uncomment when done with ui testing
+// add
+import type { UserRegisterDtoRoleEnum } from 'src/services/sdk';
+import { useAuthStore } from 'src/stores/auth-store';
+import { useQuasar } from 'quasar';
+
+type RoleType = 'student' | 'officer' | 'admin';
 
 export default defineComponent({
   name: 'LoginPage',
   components: { QBtn, QForm, QIcon },
   setup() {
     const router = useRouter();
-    // const $q = useQuasar(); uncomment when done with ui testing
-    // const authStore = useAuthStore(); uncomment when done with ui testing
+    const $q = useQuasar();
+    const authStore = useAuthStore();
+
     const username = ref('');
     const password = ref('');
-    const selectedRole = ref(null);
+    const selectedRole = ref<RoleType | null>(null);
     const loginForm = ref<QForm | null>(null);
 
     const roles = [
@@ -118,22 +122,27 @@ export default defineComponent({
       { label: 'Admin', value: 'admin' },
     ];
 
+    // Function na magre-redirect sa tamang dashboard base sa role.
+    const redirectToDashboard = (role: RoleType) => {
+      if (role === 'student') void router.push('/student-dashboard');
+      else if (role === 'officer') void router.push('/officer-dashboard');
+      else if (role === 'admin') void router.push('/admin-dashboard');
+    };
+
     const handleLogin = async () => {
+      // Unahin muna i-validate ang form inputs.
       const valid = await loginForm.value?.validate();
       if (valid !== true) return;
 
-      if (selectedRole.value === 'student') void router.push('/student-dashboard');
-      else if (selectedRole.value === 'officer') void router.push('/officer-dashboard');
-      else if (selectedRole.value === 'admin') void router.push('/admin-dashboard');
-
-      /* uncomment if done with ui testing. for real backend login
       try {
-        const response = await authStore.login({
-          username: username.value,
+        // TAWAGIN ang login action sa Pinia store.
+        await authStore.login({
+          id: username.value,
           password: password.value,
-          role: role.value as UserRegisterDtoRoleEnum,
+          role: selectedRole.value as UserRegisterDtoRoleEnum,
         });
 
+        // Kung SUCCESSFUL ang login: Ipakita ang positive notification.
         $q.notify({
           type: 'positive',
           message: 'Login successful!',
@@ -141,23 +150,28 @@ export default defineComponent({
           timeout: 2000,
         });
 
-        if (role.value === 'student') void router.push('/student-dashboard');
-        else if (role.value === 'officer') void router.push('/officer-dashboard');
-        else if (role.value === 'admin') void router.push('/admin-dashboard');
+        // I-REDIRECT ang user gamit ang role na na-save sa Pinia.
+        redirectToDashboard(authStore.role as RoleType);
+      } catch (error: any) {
+        // Kung FAILED ang login: Kunin ang error message at ipakita.
+        let errorMessage = 'Login failed. Please try again.';
 
-        console.log(response);
+        if (error.response?.data?.message) {
+          // Kunin ang specific message galing sa NestJS API (e.g., "Invalid credentials").
+          errorMessage = error.response.data.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
 
-      } catch (error: unknown) {
-          const errorMessage = error instanceof Error ? error.message : 'Login failed';
-          $q.notify({
-            type: 'negative',
-            message: errorMessage,
-            position: 'top',
-            timeout: 3000,
+        $q.notify({
+          type: 'negative',
+          message: errorMessage,
+          position: 'top',
+          timeout: 3000,
         });
-      }*/
+      }
     };
     return { logo, username, password, selectedRole, roles, loginForm, handleLogin };
-  }
-})
+  },
+});
 </script>
