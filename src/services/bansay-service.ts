@@ -52,6 +52,11 @@ export class BansayService {
     const response = await this.authApi.authControllerLogin(data);
     if (response.status == 201 || response.status == 200) {
       //save access token (response.data.accessToken) to localStorage
+      if (response.data.accessToken) {
+        localStorage.setItem('accessToken', response.data.accessToken); // from barani
+      }
+      // User data is NOT stored in localStorage for data privacy
+      // Use getCurrentUser() to fetch user data when needed
       return response.data;
     } else {
       throw new Error(response.statusText || "Bad Request");
