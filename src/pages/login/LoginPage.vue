@@ -96,43 +96,57 @@ import '../../assets/styles/auth.css';
 import { useRouter } from 'vue-router';
 import { QBtn, QForm, QIcon } from 'quasar';
 import logo from '../../assets/logo.png';
-// import { type UserRegisterDtoRoleEnum } from 'src/services/sdk'; // uncomment when done with ui testing
-//import { useAuthStore } from 'src/stores/auth-store'; // uncomment when done with ui testing
-// import { useQuasar } from 'quasar'; // uncomment when done with ui testing
+import { type UserRegisterDtoRoleEnum } from 'src/services/sdk';
+import { useAuthStore } from 'src/stores/auth-store';
+import { useQuasar } from 'quasar';
 
 export default defineComponent({
   name: 'LoginPage',
   components: { QBtn, QForm, QIcon },
   setup() {
     const router = useRouter();
-    // const $q = useQuasar(); uncomment when done with ui testing
-    // const authStore = useAuthStore(); uncomment when done with ui testing
+    const $q = useQuasar();
+    const authStore = useAuthStore();
     const username = ref('');
     const password = ref('');
-    const selectedRole = ref(null);
+    const selectedRole = ref('');
     const loginForm = ref<QForm | null>(null);
 
     const roles = [
-      { label: 'Student', value: 'student' },
-      { label: 'Officer', value: 'officer' },
-      { label: 'Admin', value: 'admin' },
+    { label: 'Student', value: 'Student' },
+    { label: 'Officer', value: 'Officer' },
+    { label: 'Admin', value: 'Admin' },
     ];
 
     const handleLogin = async () => {
+      /* uncomment if you want to skip actual login logic (for testing purposes)
       const valid = await loginForm.value?.validate();
       if (valid !== true) return;
 
       if (selectedRole.value === 'student') void router.push('/student-dashboard');
       else if (selectedRole.value === 'officer') void router.push('/officer-dashboard');
       else if (selectedRole.value === 'admin') void router.push('/admin-dashboard');
+      */
 
-      /* uncomment if done with ui testing. for real backend login
+      // Actual login logic (comment if want to test ui)
       try {
         const response = await authStore.login({
           username: username.value,
           password: password.value,
-          role: role.value as UserRegisterDtoRoleEnum,
+          role: selectedRole.value as UserRegisterDtoRoleEnum,
         });
+
+        if (selectedRole.value == 'Student' && response.user.role != 'Student' ||
+        selectedRole.value == 'Officer' && response.user.role != 'Officer' ||
+        selectedRole.value == 'Admin' && response.user.role != 'Admin') {
+          $q.notify({
+            type: 'negative',
+            message: 'Incorrect Role. Please select the correct role.',
+            position: 'top',
+            timeout: 3000,
+          });
+          return;
+        }
 
         $q.notify({
           type: 'positive',
@@ -141,22 +155,23 @@ export default defineComponent({
           timeout: 2000,
         });
 
-        if (role.value === 'student') void router.push('/student-dashboard');
-        else if (role.value === 'officer') void router.push('/officer-dashboard');
-        else if (role.value === 'admin') void router.push('/admin-dashboard');
-
-        console.log(response);
+        if (response.user.role === 'Student') void router.push('/student-dashboard');
+        else if (response.user.role === 'Officer') void router.push('/officer-dashboard');
+        else if (response.user.role === 'Admin') void router.push('/admin-dashboard');
 
       } catch (error: unknown) {
-          const errorMessage = error instanceof Error ? error.message : 'Login failed';
+          const errorMessage =
+          error instanceof Error && error.message
+          ? 'Wrong username or password'
+          : 'Login failed';
           $q.notify({
             type: 'negative',
             message: errorMessage,
             position: 'top',
             timeout: 3000,
-        });
-      }*/
-    };
+          });
+        }
+      };
     return { logo, username, password, selectedRole, roles, loginForm, handleLogin };
   }
 })
