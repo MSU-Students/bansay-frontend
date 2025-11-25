@@ -3,14 +3,40 @@
     <h5>Create Liability</h5>
 
     <q-form @submit="handleSubmit">
-      <q-input
-        v-model="form.studentUsername"
+      <q-select
+        v-model="selectedStudent"
+        :options="filteredStudents"
+        option-label="idNumber"
         label="Student Username *"
-        hint="e.g., mangorangca"
+        hint="Start typing to search students"
+        use-input
+        input-debounce="300"
+        @filter="filterStudents"
+        @update:model-value="onStudentSelect"
         :rules="[val => !!val || 'Required']"
         outlined
         class="q-mb-md"
-      />
+        :loading="loadingStudents"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              No students found
+            </q-item-section>
+          </q-item>
+        </template>
+        <template v-slot:option="scope">
+          <q-item v-bind="scope.itemProps">
+            <q-item-section>
+              <q-item-label>{{ scope.opt.idNumber }}</q-item-label>
+              <q-item-label caption>{{ scope.opt.fullName }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
+        <template v-slot:selected-item="scope">
+          <span>{{ scope.opt.idNumber }} - {{ scope.opt.fullName }}</span>
+        </template>
+      </q-select>
 
       <q-select
         v-model="form.type"
@@ -58,21 +84,25 @@
     <q-banner v-if="error" class="bg-negative text-white q-mt-md">
       {{ error }}
     </q-banner>
-
-    <q-banner v-if="success" class="bg-positive text-white q-mt-md">
-      Liability created!
-    </q-banner>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useQuasar } from 'quasar';
 import { useLiabilityStore } from 'src/stores/liability-store';
-import type { CreateLiabilityDto } from 'src/services/sdk';
+import { BansayService } from 'src/services/bansay-service';
+import type { CreateLiabilityDto, StudentDto } from 'src/services/sdk';
 
+const $q = useQuasar();
 const liabilityStore = useLiabilityStore();
 
 const typeOptions = ['tuition', 'fee', 'fine', 'other'];
+
+const students = ref<StudentDto[]>([]);
+const filteredStudents = ref<StudentDto[]>([]);
+const selectedStudent = ref<StudentDto | null>(null);
+const loadingStudents = ref(false);
 
 const form = ref<CreateLiabilityDto>({
   studentUsername: '',
@@ -83,23 +113,69 @@ const form = ref<CreateLiabilityDto>({
 
 const loading = ref(false);
 const error = ref('');
-const success = ref(false);
+
+onMounted(async () => {
+  // Load all students
+  loadingStudents.value = true;
+  try {
+    students.value = await BansayService.getInstance().getAllStudents();
+    filteredStudents.value = students.value;
+  } catch (err) {
+    console.error('Failed to load students:', err);
+  } finally {
+    loadingStudents.value = false;
+  }
+});
+
+const filterStudents = (val: string, update: (fn: () => void) => void) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    filteredStudents.value = students.value.filter(
+      s => s.idNumber.toLowerCase().includes(needle) ||
+          s.fullName.toLowerCase().includes(needle)
+    );
+  });
+};
+
+const onStudentSelect = (student: StudentDto | null) => {
+  if (student) {
+    form.value.studentUsername = student.idNumber;
+  }
+};
 
 const handleSubmit = async () => {
+  if (!selectedStudent.value) {
+    error.value = 'Please select a student';
+    return;
+  }
+
   loading.value = true;
   error.value = '';
-  success.value = false;
 
   try {
     await liabilityStore.createLiability(form.value);
-    success.value = true;
-    resetForm();
 
-    setTimeout(() => {
-      success.value = false;
-    }, 3000);
+    // Show success notification
+    $q.notify({
+      type: 'positive',
+      message: 'Liability created successfully!',
+      position: 'top',
+      timeout: 2000,
+    });
+
+    resetForm();
   } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Failed to create liability';
+    // Check if it's a 404 error (student not found)
+    if (err instanceof Error) {
+      const errorMessage = err.message.toLowerCase();
+      if (errorMessage.includes('404') || errorMessage.includes('not found')) {
+        error.value = 'Student not in database';
+      } else {
+        error.value = err.message;
+      }
+    } else {
+      error.value = 'Failed to create liability';
+    }
   } finally {
     loading.value = false;
   }
@@ -112,5 +188,6 @@ const resetForm = () => {
     amount: 0,
     dueDate: '',
   };
+  selectedStudent.value = null;
 };
 </script>

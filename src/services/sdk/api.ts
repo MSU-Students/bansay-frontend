@@ -1590,13 +1590,14 @@ export class OfficerApi extends BaseAPI {
 
 
 /**
- * StudentApi - axios parameter creator
+ * StudentsApi - axios parameter creator
  * @export
  */
-export const StudentApiAxiosParamCreator = function (configuration?: Configuration) {
+export const StudentsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Create a student
          * @param {StudentRegistrationDto} studentRegistrationDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1616,6 +1617,10 @@ export const StudentApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -1632,6 +1637,7 @@ export const StudentApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary Delete a student
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1652,6 +1658,10 @@ export const StudentApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1665,6 +1675,7 @@ export const StudentApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary Get all students
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1681,6 +1692,10 @@ export const StudentApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1694,6 +1709,7 @@ export const StudentApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary Update a student
          * @param {string} id 
          * @param {StudentPatchDto} studentPatchDto 
          * @param {*} [options] Override http request option.
@@ -1717,6 +1733,10 @@ export const StudentApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -1735,14 +1755,15 @@ export const StudentApiAxiosParamCreator = function (configuration?: Configurati
 };
 
 /**
- * StudentApi - functional programming interface
+ * StudentsApi - functional programming interface
  * @export
  */
-export const StudentApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = StudentApiAxiosParamCreator(configuration)
+export const StudentsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = StudentsApiAxiosParamCreator(configuration)
     return {
         /**
          * 
+         * @summary Create a student
          * @param {StudentRegistrationDto} studentRegistrationDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1750,11 +1771,12 @@ export const StudentApiFp = function(configuration?: Configuration) {
         async studentControllerCreate(studentRegistrationDto: StudentRegistrationDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.studentControllerCreate(studentRegistrationDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['StudentApi.studentControllerCreate']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['StudentsApi.studentControllerCreate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary Delete a student
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1762,22 +1784,24 @@ export const StudentApiFp = function(configuration?: Configuration) {
         async studentControllerDeleteStudent(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.studentControllerDeleteStudent(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['StudentApi.studentControllerDeleteStudent']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['StudentsApi.studentControllerDeleteStudent']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary Get all students
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         async studentControllerFindAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<StudentDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.studentControllerFindAll(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['StudentApi.studentControllerFindAll']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['StudentsApi.studentControllerFindAll']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary Update a student
          * @param {string} id 
          * @param {StudentPatchDto} studentPatchDto 
          * @param {*} [options] Override http request option.
@@ -1786,21 +1810,22 @@ export const StudentApiFp = function(configuration?: Configuration) {
         async studentControllerPatchStudent(id: string, studentPatchDto: StudentPatchDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.studentControllerPatchStudent(id, studentPatchDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['StudentApi.studentControllerPatchStudent']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['StudentsApi.studentControllerPatchStudent']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
 
 /**
- * StudentApi - factory interface
+ * StudentsApi - factory interface
  * @export
  */
-export const StudentApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = StudentApiFp(configuration)
+export const StudentsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = StudentsApiFp(configuration)
     return {
         /**
          * 
+         * @summary Create a student
          * @param {StudentRegistrationDto} studentRegistrationDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1810,6 +1835,7 @@ export const StudentApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Delete a student
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1819,6 +1845,7 @@ export const StudentApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Get all students
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1827,6 +1854,7 @@ export const StudentApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Update a student
          * @param {string} id 
          * @param {StudentPatchDto} studentPatchDto 
          * @param {*} [options] Override http request option.
@@ -1839,54 +1867,58 @@ export const StudentApiFactory = function (configuration?: Configuration, basePa
 };
 
 /**
- * StudentApi - object-oriented interface
+ * StudentsApi - object-oriented interface
  * @export
- * @class StudentApi
+ * @class StudentsApi
  * @extends {BaseAPI}
  */
-export class StudentApi extends BaseAPI {
+export class StudentsApi extends BaseAPI {
     /**
      * 
+     * @summary Create a student
      * @param {StudentRegistrationDto} studentRegistrationDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof StudentApi
+     * @memberof StudentsApi
      */
     public studentControllerCreate(studentRegistrationDto: StudentRegistrationDto, options?: RawAxiosRequestConfig) {
-        return StudentApiFp(this.configuration).studentControllerCreate(studentRegistrationDto, options).then((request) => request(this.axios, this.basePath));
+        return StudentsApiFp(this.configuration).studentControllerCreate(studentRegistrationDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary Delete a student
      * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof StudentApi
+     * @memberof StudentsApi
      */
     public studentControllerDeleteStudent(id: string, options?: RawAxiosRequestConfig) {
-        return StudentApiFp(this.configuration).studentControllerDeleteStudent(id, options).then((request) => request(this.axios, this.basePath));
+        return StudentsApiFp(this.configuration).studentControllerDeleteStudent(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary Get all students
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof StudentApi
+     * @memberof StudentsApi
      */
     public studentControllerFindAll(options?: RawAxiosRequestConfig) {
-        return StudentApiFp(this.configuration).studentControllerFindAll(options).then((request) => request(this.axios, this.basePath));
+        return StudentsApiFp(this.configuration).studentControllerFindAll(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary Update a student
      * @param {string} id 
      * @param {StudentPatchDto} studentPatchDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof StudentApi
+     * @memberof StudentsApi
      */
     public studentControllerPatchStudent(id: string, studentPatchDto: StudentPatchDto, options?: RawAxiosRequestConfig) {
-        return StudentApiFp(this.configuration).studentControllerPatchStudent(id, studentPatchDto, options).then((request) => request(this.axios, this.basePath));
+        return StudentsApiFp(this.configuration).studentControllerPatchStudent(id, studentPatchDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

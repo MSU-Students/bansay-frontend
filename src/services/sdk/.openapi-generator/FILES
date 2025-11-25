@@ -16,10 +16,10 @@ docs/OfficerApi.md
 docs/OfficerDto.md
 docs/RegisterResponseDto.md
 docs/RegistrationInfoDto.md
-docs/StudentApi.md
 docs/StudentDto.md
 docs/StudentPatchDto.md
 docs/StudentRegistrationDto.md
+docs/StudentsApi.md
 docs/User.md
 docs/UserApi.md
 docs/UserInfoDto.md

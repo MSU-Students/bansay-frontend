@@ -1,6 +1,7 @@
 import {
   AuthApi,
   LiabilityApi,
+  StudentsApi,
   type UserLoginDto,
   type UserRegisterDto,
   type CreateLiabilityDto,
@@ -8,6 +9,7 @@ import {
   type MyLiabilitiesResponseDto,
   type LiabilityControllerFindAllStatusEnum,
   type LiabilityControllerFindAllSortOrderEnum,
+  type StudentDto,
 } from './sdk';
 
 export interface QueryLiabilityParams {
@@ -34,6 +36,12 @@ export class BansayService {
   private authApi = new AuthApi({
     basePath: baseUrl,
     isJsonMime: () => true,
+  });
+
+  private studentsApi = new StudentsApi({
+    basePath: baseUrl,
+    isJsonMime: () => true,
+    accessToken: () => localStorage.getItem('accessToken') || '',
   });
 
   private liabilityApi = new LiabilityApi({
@@ -130,5 +138,14 @@ export class BansayService {
     if (response.status !== 204 && response.status !== 200) {
       throw new Error(response.statusText || 'Failed to delete liability');
     }
+  }
+
+  // get all students
+  async getAllStudents(): Promise<StudentDto[]> {
+    const response = await this.studentsApi.studentControllerFindAll();
+    if (response.status === 200) {
+      return response.data;
+    }
+    throw new Error(response.statusText || 'Failed to fetch students');
   }
 }
