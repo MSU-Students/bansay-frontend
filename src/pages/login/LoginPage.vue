@@ -46,27 +46,7 @@
           </q-input>
         </div>
 
-        <div class="input-box">
-          <q-select
-            filled
-            v-model="selectedRole"
-            label="Select Role"
-            :options="roles"
-            option-value="value"
-            option-label="label"
-            emit-value
-            map-options
-            color="indigo"
-            bg-color="indigo-2"
-            dense
-            clearable
-            :rules="[(val) => !!val || 'Please select a role']"
-          >
-            <template v-slot:append>
-              <q-icon name="mdi-account-switch" color="indigo" />
-            </template>
-          </q-select>
-        </div>
+
 
         <div class="forgot-link">
           <a href="#">Forgot Password?</a>
@@ -75,7 +55,7 @@
         <q-btn type="submit" color="indigo" label="Login" class="full-width" />
 
         <p>
-          Don’t have an account?
+          Don't have an account?
           <router-link to="/register">Register</router-link>
         </p>
         <p>Or login with</p>
@@ -94,7 +74,7 @@
 import { defineComponent, ref } from 'vue';
 import '../../assets/styles/auth.css';
 import { useRouter } from 'vue-router';
-import { QBtn, QForm, QIcon } from 'quasar';
+import { QBtn, QForm, QIcon, useQuasar } from 'quasar';
 import logo from '../../assets/logo.png';
 import { type UserRegisterDtoRoleEnum } from 'src/services/sdk';
 import { useAuthStore } from 'src/stores/auth-store';
@@ -150,9 +130,7 @@ export default defineComponent({
 
         $q.notify({
           type: 'positive',
-          message: 'Login successful!',
-          position: 'top',
-          timeout: 2000,
+          message: 'Login successful',
         });
 
         if (response.user.role === 'Student') void router.push('/student-dashboard');
