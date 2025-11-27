@@ -46,8 +46,6 @@
           </q-input>
         </div>
 
-
-
         <div class="forgot-link">
           <a href="#">Forgot Password?</a>
         </div>
