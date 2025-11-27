@@ -46,8 +46,6 @@
           </q-input>
         </div>
 
-
-
         <div class="forgot-link">
           <a href="#">Forgot Password?</a>
         </div>
@@ -98,6 +96,7 @@ export default defineComponent({
         const response = await authStore.login({
           username: username.value,
           password: password.value,
+          role: '',
         });
 
         const role = response.user?.role;
@@ -106,7 +105,7 @@ export default defineComponent({
         else if (role === 'admin') void router.push('/admin-dashboard');
         else {
           // Fallback if role doesn't match or is missing
-           void router.push('/');
+          void router.push('/');
         }
 
         $q.notify({
