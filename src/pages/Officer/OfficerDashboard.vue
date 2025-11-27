@@ -4,6 +4,7 @@
       <q-toolbar>
         <q-btn flat dense round icon="menu" @click="leftDrawer = !leftDrawer" />
         <q-toolbar-title>Officer Dashboard</q-toolbar-title>
+        <q-btn flat round icon="logout" @click="logout" />
       </q-toolbar>
     </q-header>
 
@@ -48,6 +49,8 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+import { useAuthStore } from 'src/stores/auth-store';
 
 export default defineComponent({
   name: 'OfficerDashboard',
@@ -55,7 +58,16 @@ export default defineComponent({
     const leftDrawer = ref(false);
     const router = useRouter();
 
-    return { leftDrawer, router };
+    function selectCard(name: string) {
+      alert(`You clicked ${name}!`);
+    }
+
+    const authStore = useAuthStore();
+    function logout() {
+      authStore.logout();
+    }
+
+    return { leftDrawer, selectCard, logout, router };
   },
 });
 </script>
