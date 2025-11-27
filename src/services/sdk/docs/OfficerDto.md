@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **number** |  | [default to undefined]
-**fullName** | **string** |  | [default to undefined]
 **idNumber** | **string** |  | [default to undefined]
 **email** | **string** |  | [default to undefined]
+**firstName** | **string** |  | [default to undefined]
+**lastName** | **string** |  | [default to undefined]
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { OfficerDto } from './api';
 
 const instance: OfficerDto = {
-    id,
-    fullName,
     idNumber,
     email,
+    firstName,
+    lastName,
 };
 ```
 

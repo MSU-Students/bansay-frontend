@@ -7,6 +7,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **idNumber** | **string** |  | [default to undefined]
 **email** | **string** |  | [default to undefined]
+**firstName** | **string** |  | [default to undefined]
+**lastName** | **string** |  | [default to undefined]
 
 ## Example
 
@@ -16,6 +18,8 @@ import { StudentRegistrationDto } from './api';
 const instance: StudentRegistrationDto = {
     idNumber,
     email,
+    firstName,
+    lastName,
 };
 ```
 

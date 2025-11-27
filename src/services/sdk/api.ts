@@ -194,18 +194,6 @@ export interface MyLiabilitiesResponseDto {
 export interface OfficerDto {
     /**
      * 
-     * @type {number}
-     * @memberof OfficerDto
-     */
-    'id': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof OfficerDto
-     */
-    'fullName': string;
-    /**
-     * 
      * @type {string}
      * @memberof OfficerDto
      */
@@ -216,6 +204,18 @@ export interface OfficerDto {
      * @memberof OfficerDto
      */
     'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OfficerDto
+     */
+    'firstName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OfficerDto
+     */
+    'lastName': string;
 }
 /**
  * 
@@ -353,6 +353,18 @@ export interface StudentRegistrationDto {
      * @memberof StudentRegistrationDto
      */
     'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StudentRegistrationDto
+     */
+    'firstName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StudentRegistrationDto
+     */
+    'lastName': string;
 }
 /**
  * 
