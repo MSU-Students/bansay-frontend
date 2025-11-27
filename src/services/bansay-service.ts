@@ -87,6 +87,19 @@ export class BansayService {
     }
   }
 
+  async getCurrentUser() {
+    const response = await this.authApi.authControllerGetMe();
+    if (response.status == 200) {
+      return response.data;
+    } else {
+      throw new Error(response.statusText || "Failed to get current user");
+    }
+  }
+
+  logout() {
+    localStorage.removeItem('accessToken');
+  }
+
   // liability services
 
   // Officer only: Create liability
