@@ -1,6 +1,7 @@
 import {
   AuthApi,
   LiabilityApi,
+  StudentApi,
   type UserLoginDto,
   type UserRegisterDto,
   type CreateLiabilityDto,
@@ -8,6 +9,7 @@ import {
   type MyLiabilitiesResponseDto,
   type LiabilityControllerFindAllStatusEnum,
   type LiabilityControllerFindAllSortOrderEnum,
+  type StudentDto,
 } from './sdk';
 
 export interface QueryLiabilityParams {
@@ -40,6 +42,12 @@ export class BansayService {
     basePath: baseUrl,
     isJsonMime: () => true,
     accessToken: () => localStorage.getItem('accessToken') || '', //needs local storage token for auth
+  });
+
+  private studentApi = new StudentApi({
+    basePath: baseUrl,
+    isJsonMime: () => true,
+    accessToken: () => localStorage.getItem('accessToken') || '',
   });
 
   static getInstance() {
@@ -92,6 +100,14 @@ export class BansayService {
     localStorage.removeItem('accessToken');
   }
 
+  // get all students
+  async getAllStudents(): Promise<StudentDto[]> {
+    const response = await this.studentApi.studentControllerFindAll();
+    if (response.status === 200) {
+      return response.data;
+    }
+    throw new Error(response.statusText || 'Failed to fetch students');
+  }
 
   // liability services
 

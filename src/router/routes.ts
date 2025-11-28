@@ -23,6 +23,12 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'officer-dashboard',
         component: () => import('pages/Officer/OfficerDashboard.vue'),
+        children: [
+          {
+            path: 'create-liability',
+            component: () => import('pages/Officer/CreateLiability.vue'),
+          },
+        ],
       },
       {
         path: 'admin-dashboard',

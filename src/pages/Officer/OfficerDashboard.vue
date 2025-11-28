@@ -17,7 +17,12 @@
               <div class="text-caption text-grey-7">Create and assign liabilities to students.</div>
             </q-card-section>
             <q-card-actions align="left">
-              <q-btn color="green-8" label="Manage Liabilities" flat />
+              <q-btn
+                color="green-8"
+                label="Manage Liabilities"
+                flat
+                @click="router.push('/officer-dashboard/create-liability')"
+              />
             </q-card-actions>
           </q-card>
         </div>
@@ -34,18 +39,23 @@
         </q-card>
       </q-scroll-area>
     </q-drawer>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
   </q-layout>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { ref } from 'vue';
+import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 
 export default defineComponent({
   name: 'OfficerDashboard',
   setup() {
     const leftDrawer = ref(false);
+    const router = useRouter();
 
     function selectCard(name: string) {
       alert(`You clicked ${name}!`);
@@ -56,7 +66,7 @@ export default defineComponent({
       authStore.logout();
     }
 
-    return { leftDrawer, selectCard, logout };
+    return { leftDrawer, selectCard, logout, router };
   },
 });
 </script>
