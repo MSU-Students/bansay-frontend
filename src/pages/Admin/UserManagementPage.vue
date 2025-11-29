@@ -44,7 +44,7 @@
                 <template v-slot:body-cell-status="props">
                   <q-td :props="props">
                     <q-chip
-                      :color="props.row.status === 'active' ? 'positive' : 'warning'"
+                      :color="props.row.status === 'Active' ? 'positive' : 'warning'"
                       text-color="white"
                       dense
                       size="sm"
@@ -138,8 +138,8 @@ const columns = [
 const fetchUsers = async () => {
   loading.value = true;
   try {
-    const { data } = await api.get('/admin');
-    rows.value = [...((data.students || []) as unknown as User[]), ...((data.officers || []) as unknown as User[])];
+    const { data } = await api.get('/user');
+    rows.value = data as unknown as User[];
   } catch (error) {
     console.error('Failed to fetch users:', error);
   } finally {
