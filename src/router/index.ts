@@ -32,7 +32,7 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  // [NEW CODE START] Navigation Guard Implementation
+  // Navigation Guard Implementation
   Router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
 
