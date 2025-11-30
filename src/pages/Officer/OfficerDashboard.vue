@@ -34,13 +34,57 @@
         </q-card>
       </q-scroll-area>
     </q-drawer>
+
+    <q-page-container>
+      <q-page padding>
+
+        <q-card>
+          <q-card-section>
+            <div class="text-h6 q-mb-md">All Student Liabilities</div>
+
+            <q-table
+              flat
+              bordered
+              :rows="rows"
+              :columns="columns"
+              row-key="id"
+              :loading="loading"
+              :filter="filter"
+            >
+              <template v-slot:top-right>
+                <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </template>
+
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
+                  <q-chip
+                    :color="props.row.status === 'Unpaid' ? 'negative' : 'positive'"
+                    text-color="white"
+                    dense
+                    size="sm"
+                  >
+                    {{ props.row.status }}
+                  </q-chip>
+                </q-td>
+              </template>
+            </q-table>
+          </q-card-section>
+        </q-card>
+
+      </q-page>
+    </q-page-container>
   </q-layout>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { useAuthStore } from 'src/stores/auth-store';
+import type { Liability } from 'src/services/sdk';
+import type { QTableColumn } from 'quasar';
 
 export default defineComponent({
   name: 'OfficerDashboard',
@@ -56,7 +100,47 @@ export default defineComponent({
       authStore.logout();
     }
 
-    return { leftDrawer, selectCard, logout };
+    const loading = ref(false);
+    const rows = ref<Liability[]>([]);
+    const filter = ref('');
+
+    const columns: QTableColumn[] = [
+      {
+        name: 'studentId',
+        label: 'Student ID',
+        align: 'left',
+        field: (row: Liability) => row.student?.username || 'N/A',
+        sortable: true
+      },
+      {
+        name: 'name',
+        label: 'Name',
+        align: 'left',
+        field: (row: Liability) => `${row.student?.firstName} ${row.student?.lastName}`,
+        sortable: true
+      },
+      { name: 'type', label: 'Type', align: 'left', field: 'type', sortable: true },
+      {
+        name: 'amount',
+        label: 'Amount',
+        align: 'right',
+        field: 'amount',
+        format: (val: number) => `₱ ${val.toLocaleString()}`,
+        sortable: true
+      },
+      { name: 'status', label: 'Status', align: 'center', field: 'status', sortable: true },
+      { name: 'dueDate', label: 'Due Date', align: 'left', field: 'dueDate', sortable: true },
+    ];
+
+    return {
+      leftDrawer,
+      selectCard,
+      logout,
+      loading,
+      rows,
+      columns,
+      filter
+    };
   },
 });
 </script>
