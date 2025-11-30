@@ -34,12 +34,28 @@
         </q-card>
       </q-scroll-area>
     </q-drawer>
+
+    <q-page-container>
+      <q-page padding>
+
+        <div class="row items-center justify-between q-mb-md">
+          <div class="text-h4">Liability Management</div>
+          <q-btn
+            color="primary"
+            icon="add"
+            label="Add Liability"
+            to="/officer/create-liability"
+            no-caps
+          />
+        </div>
+
+      </q-page>
+    </q-page-container>
   </q-layout>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { useAuthStore } from 'src/stores/auth-store';
 
 export default defineComponent({
