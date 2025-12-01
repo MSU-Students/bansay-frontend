@@ -99,23 +99,30 @@ export default defineComponent({
         });
 
         const role = response.user?.role;
-        if (role === 'student') void router.push('/student-dashboard');
-        else if (role === 'officer') void router.push('/officer-dashboard');
-        else if (role === 'admin') void router.push('/admin-dashboard');
-        else {
+        if (role === 'Student') {
+          await router.push('/student-dashboard');
+        } else if (role === 'Officer') {
+          await router.push('/officer-dashboard');
+        } else if (role === 'Admin') {
+          await router.push('/admin-dashboard');
+        } else {
           // Fallback if role doesn't match or is missing
           void router.push('/');
         }
-
         $q.notify({
           type: 'positive',
           message: 'Login successful',
         });
       } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'Login failed';
-        $q.notify({
-          type: 'negative',
-          message: message,
+        const errorMessage =
+          error instanceof Error && error.message
+          ? 'Wrong username or password'
+          : 'Login failed';
+          $q.notify({
+            type: 'negative',
+            message: errorMessage,
+            position: 'top',
+            timeout: 3000,
         });
       }
     };

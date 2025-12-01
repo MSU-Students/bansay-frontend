@@ -26,9 +26,9 @@ export interface UpdateLiabilityDto {
   dueDate?: string;
 }
 
-const isDevEnv = process.env.ENV == 'development';
+const isDevEnv = process.env.NODE_ENV == 'development';
 const baseUrl: string = isDevEnv ? 'http://localhost:3030' :
-  'https://6f12ecy5s4.execute-api.us-east-2.amazonaws.com/prod';
+'https://6f12ecy5s4.execute-api.us-east-2.amazonaws.com/prod';
 
 export class BansayService {
   private static instance?: BansayService;
