@@ -50,6 +50,7 @@
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
+import { useLiabilityStore } from 'src/stores/liability-store';
 
 export default defineComponent({
   name: 'OfficerDashboard',
