@@ -102,7 +102,7 @@ export default defineComponent({
         if (role === 'Student') {
           await router.push('/student-dashboard');
         } else if (role === 'Officer') {
-          await router.push('/officer-dashboard');
+          await router.push('/officer');
         } else if (role === 'Admin') {
           await router.push('/admin-dashboard');
         } else {

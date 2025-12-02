@@ -44,30 +44,30 @@ const routes: RouteRecordRaw[] = [
     path: '/officer',
     component: () => import('layouts/OfficerLayout.vue'), // << New Officer Layout
     children: [
-      {
-        path: 'officer-dashboard',
-        component: () => import('pages/Officer/OfficerDashboard.vue'),
-        children: [
+          {
+            path: 'officer-dashboard',
+            component: () => import('pages/Officer/OfficerDashboard.vue'),
+          },
           {
             path: 'create-liability',
             component: () => import('pages/Officer/CreateLiability.vue'),
           },
-        ],
+        {
         path: 'manage',
         name: 'liability-management',
         component: () => import('pages/Officer/LiabilityManagementPage.vue'), // Placeholder
-      },
-      {
+        },
+        {
         path: 'appeals',
         name: 'appeal-review',
         component: () => import('pages/Officer/AppealReviewPage.vue'), // Placeholder
-      },
-      {
+        },
+        {
         path: 'verify',
         name: 'payment-verification',
         component: () => import('pages/Officer/PaymentVerificationPage.vue'), // Placeholder
-      },
-      {
+        },
+        {
         path: 'reports',
         name: 'officer-reports',
         component: () => import('pages/Officer/ReportsPage.vue'), // Placeholder

@@ -103,20 +103,94 @@
       </template>
     </q-table>
 
+    <!-- ADD LIABILITY DIALOG -->
     <q-dialog v-model="showAddLiabilityDialog">
       <q-card style="width: 700px; max-width: 80vw">
         <q-card-section>
-          <div class="text-h6">Add New Liability Form</div>
+          <div class="text-h6">Add New Liability</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <p>Form to create a new liability record will be implemented here (Sprint 3).</p>
-        </q-card-section>
+          <q-form @submit="handleCreateLiability">
+            <q-select
+              v-model="selectedStudent"
+              :options="filteredStudents"
+              option-label="idNumber"
+              label="Student Username *"
+              hint="Start typing to search students"
+              use-input
+              input-debounce="300"
+              @filter="filterStudents"
+              @update:model-value="onStudentSelect"
+              :rules="[val => !!val || 'Required']"
+              outlined
+              class="q-mb-md"
+              :loading="loadingStudents"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No students found
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <q-item-label>{{ scope.opt.idNumber }}</q-item-label>
+                    <q-item-label caption>{{ scope.opt.fullName }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-slot:selected-item="scope">
+                <span>{{ scope.opt.idNumber }} - {{ scope.opt.fullName }}</span>
+              </template>
+            </q-select>
 
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup />
-          <q-btn label="Save Liability" color="green" disabled />
-        </q-card-actions>
+            <q-select
+              v-model="newLiability.type"
+              :options="typeOptions"
+              label="Type *"
+              outlined
+              class="q-mb-md"
+              :rules="[val => !!val || 'Required']"
+            />
+
+            <q-input
+              v-model.number="newLiability.amount"
+              label="Amount *"
+              type="number"
+              hint="e.g., 150.75"
+              :rules="[val => val > 0 || 'Must be greater than 0']"
+              outlined
+              class="q-mb-md"
+            />
+
+            <q-input
+              v-model="newLiability.dueDate"
+              label="Due Date *"
+              type="date"
+              :rules="[val => !!val || 'Required']"
+              outlined
+              class="q-mb-md"
+            />
+
+            <div class="row q-gutter-sm">
+              <q-btn
+                label="Cancel"
+                color="grey"
+                flat
+                v-close-popup
+              />
+              <q-btn
+                type="submit"
+                label="Create Liability"
+                color="green"
+                :loading="creatingLiability"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
       </q-card>
     </q-dialog>
   </q-page>
@@ -125,23 +199,21 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import { useLiabilityStore } from 'src/stores/liability-store';
+import { BansayService } from 'src/services/bansay-service';
 import { storeToRefs } from 'pinia';
 import type { QTableProps } from 'quasar';
 import { useQuasar } from 'quasar';
 import type {
   Liability,
+  CreateLiabilityDto,
+  StudentDto,
   LiabilityControllerFindAllStatusEnum,
   LiabilityControllerFindAllSortOrderEnum,
 } from 'src/services/sdk';
 
-// --- TYPE DEFINITIONS FOR FIXING ERRORS ---
-// FIX: Define the parameter type for onRequest using the correct utility type
 type RequestProp = NonNullable<Parameters<NonNullable<QTableProps['onRequest']>>[0]>;
-
-// FIX: Define the required structure for manual onRequest calls
 type MinimalRequestProps = Pick<RequestProp, 'pagination' | 'getCellValue'> & { filter?: unknown };
 
-// Define the precise type for the columns array
 const columns: QTableProps['columns'] = [
   {
     name: 'studentUsername',
@@ -166,7 +238,10 @@ const columns: QTableProps['columns'] = [
     align: 'right',
     field: 'amount',
     sortable: true,
-    format: (val: number) => `₱ ${val.toFixed(2)}`,
+    format: (val: number | string) => {
+      const numVal = typeof val === 'string' ? parseFloat(val) : val;
+      return `₱ ${numVal.toFixed(2)}`;
+    },
   },
   { name: 'status', label: 'Status', align: 'left', field: 'status', sortable: true },
   {
@@ -187,45 +262,145 @@ export default defineComponent({
     const liabilityStore = useLiabilityStore();
     const { liabilities: allLiabilities, loading } = storeToRefs(liabilityStore);
 
-    // State for Search and Filter
+    // Search and filter state
     const searchQuery = ref('');
     const filterType = ref('All');
     const filterStatus = ref('All');
     const filterDueDate = ref(null);
-
     const showAddLiabilityDialog = ref(false);
 
-    // State for pagination (Must be number for rowsNumber)
+    // Create liability state
+    const typeOptions = ['tuition', 'fee', 'fine', 'other'];
+    const students = ref<StudentDto[]>([]);
+    const filteredStudents = ref<StudentDto[]>([]);
+    const selectedStudent = ref<StudentDto | null>(null);
+    const loadingStudents = ref(false);
+    const creatingLiability = ref(false);
+
+    const newLiability = ref<CreateLiabilityDto>({
+      studentUsername: '',
+      type: 'fine',
+      amount: 0,
+      dueDate: '',
+    });
+
     const pagination = ref({
       sortBy: 'createdAt',
       descending: true,
       page: 1,
       rowsPerPage: 10,
-      rowsNumber: 100, // Initialize with a number
+      rowsNumber: 100,
     });
 
-    const fetchLiabilities = (props: { pagination: QTableProps['pagination'] }) => {
-      const { page, rowsPerPage, sortBy, descending } = props.pagination || {};
+    // Load students for autocomplete
+    onMounted(async () => {
+      loadingStudents.value = true;
+      try {
+        students.value = await BansayService.getInstance().getAllStudents();
+        filteredStudents.value = students.value;
+      } catch (err) {
+        console.error('Failed to load students:', err);
+      } finally {
+        loadingStudents.value = false;
+      }
 
+      // Load initial liabilities
+      const minimalProps: MinimalRequestProps = {
+        pagination: pagination.value,
+        getCellValue: () => null,
+      };
+      if (onRequest) {
+        onRequest(minimalProps as RequestProp);
+      }
+    });
+
+    const filterStudents = (val: string, update: (fn: () => void) => void) => {
+      update(() => {
+        const needle = val.toLowerCase();
+        filteredStudents.value = students.value.filter(
+          s => s.idNumber.toLowerCase().includes(needle) ||
+               s.fullName.toLowerCase().includes(needle)
+        );
+      });
+    };
+
+    const onStudentSelect = (student: StudentDto | null) => {
+      if (student) {
+        newLiability.value.studentUsername = student.idNumber;
+      }
+    };
+
+    const handleCreateLiability = async () => {
+      if (!selectedStudent.value) {
+        $q.notify({
+          type: 'negative',
+          message: 'Please select a student',
+          position: 'top',
+        });
+        return;
+      }
+
+      creatingLiability.value = true;
+      try {
+        await liabilityStore.createLiability(newLiability.value);
+
+        $q.notify({
+          type: 'positive',
+          message: 'Liability created successfully!',
+          position: 'top',
+          timeout: 2000,
+        });
+
+        showAddLiabilityDialog.value = false;
+        resetForm();
+
+        // Refresh liabilities list
+        const minimalProps: MinimalRequestProps = {
+          pagination: pagination.value,
+          getCellValue: () => null,
+        };
+        if (onRequest) {
+          onRequest(minimalProps as RequestProp);
+        }
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to create liability';
+        const isNotFound = errorMessage.toLowerCase().includes('404') ||
+                          errorMessage.toLowerCase().includes('not found');
+
+        $q.notify({
+          type: 'negative',
+          message: isNotFound ? 'Student not in database' : errorMessage,
+          position: 'top',
+        });
+      } finally {
+        creatingLiability.value = false;
+      }
+    };
+
+    const resetForm = () => {
+      newLiability.value = {
+        studentUsername: '',
+        type: 'fine',
+        amount: 0,
+        dueDate: '',
+      };
+      selectedStudent.value = null;
+    };
+
+    const fetchLiabilities = (props: { pagination: QTableProps['pagination'] }) => {
+      const { sortBy, descending } = props.pagination || {};
       const statusFilterValue = filterStatus.value === 'All' ? undefined : filterStatus.value;
       const sortOrderValue = descending ? 'DESC' : 'ASC';
 
       const queryParams = {
-        page: page || 1,
-        limit: rowsPerPage || 10,
         sortBy: sortBy as string,
-
         sortOrder: sortOrderValue as LiabilityControllerFindAllSortOrderEnum,
-
         studentUsername: searchQuery.value,
         status: statusFilterValue as LiabilityControllerFindAllStatusEnum | undefined,
       };
 
       liabilityStore
         .fetchAllLiabilities(queryParams)
-        .then(() => {
-          // Handle total count update if API provides it
-        })
         .catch((error) => {
           $q.notify({
             type: 'negative',
@@ -235,49 +410,30 @@ export default defineComponent({
         });
     };
 
-    // Handler for Q-Table request (pagination and sorting)
     const onRequest: QTableProps['onRequest'] = (props) => {
-      // FIX 1: Use spread operator and nullish coalescence to safely update pagination.
-      // This ensures the strict 'rowsNumber: number' property is always satisfied.
       pagination.value = {
         ...(props.pagination || {}),
         rowsNumber: props.pagination?.rowsNumber || pagination.value.rowsNumber,
       };
-
       fetchLiabilities(props);
     };
 
-    // Handler for manual filter changes (FIX for Error 2)
     const handleFilterChange = () => {
       pagination.value.page = 1;
-
-      // FIX for Errors 2 & 3: Create the minimal required properties object
       const minimalProps: MinimalRequestProps = {
         pagination: pagination.value,
         getCellValue: () => null,
       };
-
-      // Use the proper Quasar type for the call
       onRequest(minimalProps as RequestProp);
     };
 
-    // Actions for buttons (Placeholder for future implementation)
     const editLiability = (liability: Liability) => {
-      $q.notify({ message: `Editing Liability ID: ${liability.id}` });
+      $q.notify({ message: `Editing Liability ID: ${liability.id} (TODO)` });
     };
 
     const markAsPaid = (liability: Liability) => {
-      $q.notify({ message: `Marking Liability ID: ${liability.id} as Paid (TODO: API Call)` });
+      $q.notify({ message: `Marking Liability ID: ${liability.id} as Paid (TODO)` });
     };
-
-    // Fetch initial data on component load (FIX for Error 3)
-    onMounted(() => {
-      const minimalProps: MinimalRequestProps = {
-        pagination: pagination.value,
-        getCellValue: () => null,
-      };
-      onRequest(minimalProps as RequestProp);
-    });
 
     return {
       columns,
@@ -293,6 +449,16 @@ export default defineComponent({
       editLiability,
       markAsPaid,
       showAddLiabilityDialog,
+      // Create liability
+      typeOptions,
+      filteredStudents,
+      selectedStudent,
+      loadingStudents,
+      creatingLiability,
+      newLiability,
+      filterStudents,
+      onStudentSelect,
+      handleCreateLiability,
     };
   },
 });
