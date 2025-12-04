@@ -1,5 +1,5 @@
 <template>
-  <q-page class="bg-grey-2 flex flex-center">
+  <q-page class="auth-page-wrapper">
     <div class="container">
       <q-form @submit.prevent="handleLogin" ref="loginForm">
         <div class="logo-header">
@@ -115,14 +115,12 @@ export default defineComponent({
         });
       } catch (error: unknown) {
         const errorMessage =
-          error instanceof Error && error.message
-          ? 'Wrong username or password'
-          : 'Login failed';
-          $q.notify({
-            type: 'negative',
-            message: errorMessage,
-            position: 'top',
-            timeout: 3000,
+          error instanceof Error && error.message ? 'Wrong username or password' : 'Login failed';
+        $q.notify({
+          type: 'negative',
+          message: errorMessage,
+          position: 'top',
+          timeout: 3000,
         });
       }
     };

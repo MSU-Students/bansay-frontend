@@ -1,5 +1,5 @@
 <template>
-  <q-page class="bg-grey-2 flex flex-center">
+  <q-page class="auth-page-wrapper">
     <div class="container">
       <q-form @submit.prevent="handleRegister" ref="registerForm">
         <div class="logo-header">
