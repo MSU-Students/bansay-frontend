@@ -19,7 +19,13 @@
               <div class="text-caption text-grey-7">Manage user accounts and permissions.</div>
             </q-card-section>
             <q-card-actions align="left">
-              <q-btn :to="{ name: 'user-management' }" color="red-8" label="Manage Users" flat />
+              <q-btn
+                :to="{ name: 'user-management' }"
+                color="red-8"
+                label="Manage Users"
+                flat
+                @click="leftDrawerOpen = false"
+              />
             </q-card-actions>
           </q-card>
         </div>
@@ -32,7 +38,7 @@
             <div class="text-caption text-grey-7">Configure system preferences and settings.</div>
           </q-card-section>
           <q-card-actions align="left">
-            <q-btn color="red-8" label="Settings" flat />
+            <q-btn color="red-8" label="Settings" flat @click="leftDrawerOpen = false" />
           </q-card-actions>
         </q-card>
       </q-scroll-area>

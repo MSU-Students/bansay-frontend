@@ -1,69 +1,129 @@
 <template>
   <q-page class="bg-grey-2 flex flex-center">
-    <div class="container">
-      <q-form @submit.prevent="handleLogin" ref="loginForm">
-        <div class="logo-header">
+    <div class="container landscape-container">
+      <!-- Left side: Logo and App Info -->
+      <div class="left-side">
+        <div class="logo-section">
           <img :src="logo" alt="Bansay Logo" class="logo" />
-          <h2 class="app-title">Bansay App</h2>
+          <h1 class="app-title">Bansay App</h1>
+          <p class="app-subtitle">Welcome back to your community</p>
         </div>
+      </div>
 
-        <h1 class="login-title">Login</h1>
+      <!-- Right side: Login Form -->
+      <div class="right-side">
+        <q-form @submit.prevent="handleLogin" ref="loginForm" class="form-wrapper">
+          <h1 class="login-title">Sign In</h1>
+          
+          <div class="q-gutter-y-lg">
+            <q-input
+              filled
+              v-model="username"
+              label="Username"
+              placeholder="Enter your username"
+              color="indigo"
+              bg-color="indigo-2"
+              dense
+            >
+              <template v-slot:prepend>
+                <q-icon name="mdi-account" color="indigo" />
+              </template>
+              <template v-slot:append>
+                <div 
+                  v-if="username" 
+                  class="cursor-pointer"
+                  @click="username = ''"
+                  tabindex="-1"
+                >
+                  <q-icon name="mdi-close" color="indigo" size="xs" />
+                </div>
+              </template>
+            </q-input>
+  
+            <q-input
+              filled
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              label="Password"
+              placeholder="Enter your password"
+              color="indigo"
+              bg-color="indigo-2"
+              dense
+            >
+              <template v-slot:prepend>
+                <q-icon name="mdi-lock" color="indigo" />
+              </template>
+              <template v-slot:append>
+                <div class="flex items-center">
+                  <div 
+                    v-if="password" 
+                    class="cursor-pointer q-mr-xs"
+                    @click="togglePasswordVisibility"
+                    tabindex="-1"
+                  >
+                    <q-icon 
+                      :name="showPassword ? 'mdi-eye-off' : 'mdi-eye'" 
+                      color="indigo" 
+                      size="xs" 
+                    />
+                  </div>
+                  <div 
+                    v-if="password" 
+                    class="cursor-pointer"
+                    @click="password = ''"
+                    tabindex="-1"
+                  >
+                    <q-icon name="mdi-close" color="indigo" size="xs" />
+                  </div>
+                </div>
+              </template>
+            </q-input>
+            
+            <div v-if="hasError" class="flex items-center text-red q-mt-sm q-pa-sm rounded-borders bg-red-1">
+              <q-icon name="error" color="red" size="sm"/>
+              <span class="q-ml-sm text-body2">Incorrect username or password</span>
+            </div>
+          </div>
 
-        <div class="input-box">
-          <q-input
-            filled
-            v-model="username"
-            label="Username"
-            placeholder="Enter your username"
-            color="indigo"
-            bg-color="indigo-2"
-            dense
-            clearable
-            :rules="[(val) => !!val || 'Please enter your username']"
-          >
-            <template v-slot:append>
-              <q-icon name="mdi-account" color="indigo" />
-            </template>
-          </q-input>
-        </div>
+          <div class="forgot-link text-right q-mt-sm">
+            <a href="#" class="text-indigo text-caption">Forgot Password?</a>
+          </div>
 
-        <div class="input-box">
-          <q-input
-            filled
-            v-model="password"
-            label="Password"
-            placeholder="Enter your password"
-            type="password"
-            color="indigo"
-            bg-color="indigo-2"
-            dense
-            clearable
-            :rules="[(val) => !!val || 'Please enter your password']"
-          >
-            <template v-slot:append>
-              <q-icon name="mdi-lock" color="indigo" />
-            </template>
-          </q-input>
-        </div>
+          <div class="q-mt-lg">
+            <q-btn 
+              type="submit" 
+              color="indigo" 
+              :label="isLoading ? 'Signing in...' : 'Sign In'" 
+              class="full-width"
+              :loading="isLoading"
+              :disable="isLoading"
+              size="lg"
+            >
+              <template v-slot:loading>
+                <q-spinner-hourglass class="on-left" />
+                Signing in...
+              </template>
+            </q-btn>
+          </div>
 
-        <div class="forgot-link">
-          <a href="#">Forgot Password?</a>
-        </div>
+          <div class="q-mt-lg text-center">
+            <p class="text-body2">
+              Don't have an account?
+              <router-link to="/register" class="text-indigo q-ml-xs">Register</router-link>
+            </p>
+          </div>
 
-        <q-btn type="submit" color="indigo" label="Login" class="full-width" />
-
-        <p>
-          Don't have an account?
-          <router-link to="/register">Register</router-link>
-        </p>
-        <p>Or login with</p>
-        <div class="social-icons">
-          <q-btn round color="red" icon="mdi-google" size="10px" />
-          <q-btn round color="blue-8" icon="mdi-facebook" size="10px" />
-          <q-btn round color="black" icon="mdi-github" size="10px" />
-          <q-btn round color="blue-9" icon="mdi-linkedin" size="10px" />
-        </div>
-      </q-form>
+          <div class="q-mt-lg text-center">
+            <p class="text-caption text-grey-7">Or login with</p>
+            <div class="social-icons q-mt-sm">
+              <q-btn round color="red" icon="mdi-google" size="sm" />
+              <q-btn round color="blue-8" icon="mdi-facebook" size="sm" />
+              <q-btn round color="black" icon="mdi-github" size="sm" />
+              <q-btn round color="blue-9" icon="mdi-linkedin" size="sm" />
+            </div>
+          </div>
+        </q-form>
+      </div>
     </div>
   </q-page>
 </template>
@@ -87,10 +147,27 @@ export default defineComponent({
     const username = ref('');
     const password = ref('');
     const loginForm = ref<QForm | null>(null);
+    const showPassword = ref(false);
+    
+    const loginError = ref<string>('');
+    const hasError = ref<boolean>(false);
+    const isLoading = ref<boolean>(false);
+
+    const togglePasswordVisibility = () => {
+      showPassword.value = !showPassword.value;
+    };
 
     const handleLogin = async () => {
+      loginError.value = '';
+      hasError.value = false;
+      isLoading.value = true;
+
       const valid = await loginForm.value?.validate();
-      if (valid !== true) return;
+      if (valid !== true) {
+        hasError.value = true;
+        isLoading.value = false;
+        return;
+      }
 
       try {
         const response = await authStore.login({
@@ -99,28 +176,48 @@ export default defineComponent({
         });
 
         const role = response.user?.role;
-        if (role === 'student') void router.push('/student-dashboard');
-        else if (role === 'officer') void router.push('/officer-dashboard');
-        else if (role === 'admin') void router.push('/admin-dashboard');
-        else {
+        if (role === 'Student') {
+          await router.push('/student-dashboard');
+        } else if (role === 'Officer') {
+          await router.push('/officer-dashboard');
+        } else if (role === 'Admin') {
+          await router.push('/admin');
+        } else {
           // Fallback if role doesn't match or is missing
           void router.push('/');
         }
-
         $q.notify({
           type: 'positive',
           message: 'Login successful',
         });
       } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'Login failed';
-        $q.notify({
-          type: 'negative',
-          message: message,
+        hasError.value = true;
+        loginError.value = error instanceof Error && error.message
+          ? 'Incorrect username or password'
+          : 'Login failed';
+          $q.notify({
+            type: 'negative',
+            message: loginError.value,
+            position: 'top',
+            timeout: 3000,
         });
+      } finally {
+        isLoading.value = false;
       }
     };
 
-    return { logo, username, password, loginForm, handleLogin };
+    return { 
+      logo, 
+      username, 
+      password, 
+      loginForm, 
+      showPassword,
+      togglePasswordVisibility,
+      handleLogin, 
+      loginError, 
+      hasError,
+      isLoading 
+    };
   },
 });
 </script>

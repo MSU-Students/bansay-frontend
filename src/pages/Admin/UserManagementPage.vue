@@ -12,7 +12,7 @@
                     v-model="searchQuery"
                     outlined
                     dense
-                    placeholder="Search users..."
+                    placeholder="Search users"
                     class="search-input"
                   >
                     <template v-slot:prepend>
@@ -25,6 +25,7 @@
                   label="Refresh"
                   icon="refresh"
                   no-caps
+                  @click="refreshUsers"
                 />
               </div>
             </div>
@@ -33,17 +34,28 @@
               <q-table
                 flat
                 bordered
-                :rows="[]"
+                :rows="filteredUsers"
                 :columns="columns"
                 row-key="id"
                 :rows-per-page-options="[5, 10, 20]"
               >
-                <template v-slot:body>
-                  <q-tr>
-                    <q-td colspan="100%" class="text-center text-grey-6">
-                      No users found
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td key="name" :props="props">{{
+                      props.row.firstName + ' ' + props.row.lastName
+                    }}</q-td>
+                    <q-td key="email" :props="props">{{ props.row.email }}</q-td>
+                    <q-td key="role" :props="props">{{ props.row.role }}</q-td>
+                    <q-td key="joined" :props="props">{{ props.row.createdAt }}</q-td>
+                    <q-td key="status" :props="props">{{ props.row.status }}</q-td>
+                    <q-td key="actions" :props="props">
+                      <!-- Add actions here for the users -->
                     </q-td>
                   </q-tr>
+                </template>
+
+                <template v-slot:no-data>
+                  <div class="full-width text-center q-pa-md text-grey-6">No users found</div>
                 </template>
               </q-table>
             </div>
@@ -54,48 +66,76 @@
   </q-page>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
+import { useUserStore } from 'src/stores/user-store';
+import { type User } from 'src/services/sdk';
 
-const searchQuery = ref('')
+const searchQuery = ref('');
+const userStore = useUserStore();
+
+onMounted(async () => {
+  await userStore.fetchUsers();
+});
+
+const filteredUsers = computed(() => {
+  if (!searchQuery.value) return userStore.users;
+
+  const query = searchQuery.value.toLowerCase();
+  return userStore.users.filter((user) => {
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    return fullName.includes(query);
+  });
+});
+
+const refreshUsers = async () => {
+  await userStore.fetchUsers();
+};
 
 const columns = [
   {
-    name: 'username',
+    name: 'name',
     required: true,
-    label: 'Username',
+    label: 'Name',
     align: 'left' as const,
-    field: 'username',
-    sortable: true
+    field: (row: User) => `${row.firstName} ${row.lastName}`,
+    sortable: true,
   },
   {
     name: 'email',
     label: 'Email',
     align: 'left' as const,
     field: 'email',
-    sortable: true
+    sortable: true,
   },
   {
     name: 'role',
     label: 'Role',
     align: 'left' as const,
     field: 'role',
-    sortable: true
+    sortable: true,
   },
   {
     name: 'joined',
     label: 'Joined',
     align: 'left' as const,
     field: 'joined',
-    sortable: true
+    sortable: true,
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    align: 'left' as const,
+    field: 'status',
+    sortable: true,
   },
   {
     name: 'actions',
     label: 'Actions',
     align: 'center' as const,
-    field: 'actions'
-  }
-]
+    field: 'actions',
+  },
+];
 </script>
 
 <style scoped>

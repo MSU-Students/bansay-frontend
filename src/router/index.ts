@@ -20,7 +20,9 @@ import { useAuthStore } from 'src/stores/auth-store';
 export default defineRouter(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
+    : process.env.VUE_ROUTER_MODE === 'history'
+      ? createWebHistory
+      : createWebHashHistory;
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -32,30 +34,47 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  // Navigation Guard Implementation
   Router.beforeEach(async (to, from, next) => {
+    const { useAuthStore } = await import('src/stores/auth-store');
     const authStore = useAuthStore();
+    await authStore.fetchCurrentUser();
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const allowedRoles = to.meta.roles as string[] | undefined;
 
-    // 1. Recover session: If state is empty but token exists in storage, try to fetch user.
-    if (!authStore.isAuthenticated && localStorage.getItem('accessToken')) {
-      await authStore.fetchCurrentUser();
+    if (requiresAuth) {
+      if (!authStore.isAuthenticated) {
+        // User is not logged in, redirect to login
+        next('/login');
+        return;
+      }
+
+      // User is logged in, check role if applicable
+      if (allowedRoles) {
+        const userRole = authStore.currentUser?.role;
+        if (userRole && allowedRoles.includes(userRole)) {
+          // User has allowed role
+          next();
+        } else {
+          // User does not have allowed role, redirect to home/dashboard or show error
+          // For now, redirect to root which should handle redirection based on role if implemented,
+          // or just stay on current page (but that might loop if current page is restricted).
+          // Safest is to redirect to a known safe page or their specific dashboard if known.
+          // Since we don't have a generic "unauthorized" page, let's redirect to login for now to force re-login or just stop.
+          // Better: Redirect to their own dashboard if possible, or just next(false).
+          // Let's try to redirect to their dashboard based on their role.
+          if (userRole === 'Student') next('/student-dashboard');
+          else if (userRole === 'Officer') next('/officer-dashboard');
+          else if (userRole === 'Admin') next('/admin-dashboard');
+          else next('/login'); // Fallback
+        }
+      } else {
+        // No specific roles required, just auth
+        next();
+      }
+    } else {
+      // Route does not require auth
+      next();
     }
-
-    // 2. Define public routes that don't need login
-    const publicPages = ['/login', '/register', '/'];
-    const authRequired = !publicPages.includes(to.path);
-
-    // 3. Block access: If page requires auth & user is not logged in -> Send to Login
-    if (authRequired && !authStore.isAuthenticated) {
-      return next('/login');
-    }
-
-    // 4. Redirect logged-in users away from Login/Register pages -> Send to Dashboard
-    if (publicPages.includes(to.path) && authStore.isAuthenticated) {
-      return next('/student-dashboard');
-    }
-
-    next();
   });
 
   return Router;
