@@ -1,5 +1,5 @@
 <template>
-  <q-page class="bg-grey-2 flex flex-center">
+  <q-page class="auth-page-wrapper">
     <div class="container landscape-container">
       <!-- Left side: Logo and App Info -->
       <div class="left-side">
@@ -14,7 +14,7 @@
       <div class="right-side">
         <q-form @submit.prevent="handleLogin" ref="loginForm" class="form-wrapper">
           <h1 class="login-title">Sign In</h1>
-          
+
           <div class="q-gutter-y-lg">
             <q-input
               filled
@@ -29,17 +29,12 @@
                 <q-icon name="mdi-account" color="indigo" />
               </template>
               <template v-slot:append>
-                <div 
-                  v-if="username" 
-                  class="cursor-pointer"
-                  @click="username = ''"
-                  tabindex="-1"
-                >
+                <div v-if="username" class="cursor-pointer" @click="username = ''" tabindex="-1">
                   <q-icon name="mdi-close" color="indigo" size="xs" />
                 </div>
               </template>
             </q-input>
-  
+
             <q-input
               filled
               v-model="password"
@@ -55,32 +50,30 @@
               </template>
               <template v-slot:append>
                 <div class="flex items-center">
-                  <div 
-                    v-if="password" 
+                  <div
+                    v-if="password"
                     class="cursor-pointer q-mr-xs"
                     @click="togglePasswordVisibility"
                     tabindex="-1"
                   >
-                    <q-icon 
-                      :name="showPassword ? 'mdi-eye-off' : 'mdi-eye'" 
-                      color="indigo" 
-                      size="xs" 
+                    <q-icon
+                      :name="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                      color="indigo"
+                      size="xs"
                     />
                   </div>
-                  <div 
-                    v-if="password" 
-                    class="cursor-pointer"
-                    @click="password = ''"
-                    tabindex="-1"
-                  >
+                  <div v-if="password" class="cursor-pointer" @click="password = ''" tabindex="-1">
                     <q-icon name="mdi-close" color="indigo" size="xs" />
                   </div>
                 </div>
               </template>
             </q-input>
-            
-            <div v-if="hasError" class="flex items-center text-red q-mt-sm q-pa-sm rounded-borders bg-red-1">
-              <q-icon name="error" color="red" size="sm"/>
+
+            <div
+              v-if="hasError"
+              class="flex items-center text-red q-mt-sm q-pa-sm rounded-borders bg-red-1"
+            >
+              <q-icon name="error" color="red" size="sm" />
               <span class="q-ml-sm text-body2">Incorrect username or password</span>
             </div>
           </div>
@@ -90,10 +83,10 @@
           </div>
 
           <div class="q-mt-lg">
-            <q-btn 
-              type="submit" 
-              color="indigo" 
-              :label="isLoading ? 'Signing in...' : 'Sign In'" 
+            <q-btn
+              type="submit"
+              color="indigo"
+              :label="isLoading ? 'Signing in...' : 'Sign In'"
               class="full-width"
               :loading="isLoading"
               :disable="isLoading"
@@ -148,7 +141,7 @@ export default defineComponent({
     const password = ref('');
     const loginForm = ref<QForm | null>(null);
     const showPassword = ref(false);
-    
+
     const loginError = ref<string>('');
     const hasError = ref<boolean>(false);
     const isLoading = ref<boolean>(false);
@@ -192,31 +185,32 @@ export default defineComponent({
         });
       } catch (error: unknown) {
         hasError.value = true;
-        loginError.value = error instanceof Error && error.message
-          ? 'Incorrect username or password'
-          : 'Login failed';
-          $q.notify({
-            type: 'negative',
-            message: loginError.value,
-            position: 'top',
-            timeout: 3000,
+        loginError.value =
+          error instanceof Error && error.message
+            ? 'Incorrect username or password'
+            : 'Login failed';
+        $q.notify({
+          type: 'negative',
+          message: loginError.value,
+          position: 'top',
+          timeout: 3000,
         });
       } finally {
         isLoading.value = false;
       }
     };
 
-    return { 
-      logo, 
-      username, 
-      password, 
-      loginForm, 
+    return {
+      logo,
+      username,
+      password,
+      loginForm,
       showPassword,
       togglePasswordVisibility,
-      handleLogin, 
-      loginError, 
+      handleLogin,
+      loginError,
       hasError,
-      isLoading 
+      isLoading,
     };
   },
 });

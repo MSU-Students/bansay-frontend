@@ -1,5 +1,5 @@
 <template>
-  <q-page class="bg-grey-2 flex flex-center">
+  <q-page class="auth-page-wrapper">
     <div class="container landscape-container">
       <!-- Left side: Logo and App Info -->
       <div class="left-side">
@@ -14,7 +14,7 @@
       <div class="right-side">
         <q-form @submit.prevent="handleRegister" ref="registerForm" class="form-wrapper">
           <h1 class="register-title">Create Account</h1>
-          
+
           <div class="q-gutter-y-sm">
             <div class="row q-gutter-sm">
               <div class="col">
@@ -26,15 +26,15 @@
                   color="indigo"
                   bg-color="indigo-2"
                   dense
-                  :rules="[val => !!val || 'First name is required']"
+                  :rules="[(val) => !!val || 'First name is required']"
                   lazy-rules
                 >
                   <template v-slot:prepend>
                     <q-icon name="mdi-account" color="indigo" />
                   </template>
                   <template v-slot:append>
-                    <div 
-                      v-if="firstName" 
+                    <div
+                      v-if="firstName"
                       class="cursor-pointer"
                       @click="firstName = ''"
                       tabindex="-1"
@@ -53,15 +53,15 @@
                   color="indigo"
                   bg-color="indigo-2"
                   dense
-                  :rules="[val => !!val || 'Last name is required']"
+                  :rules="[(val) => !!val || 'Last name is required']"
                   lazy-rules
                 >
                   <template v-slot:prepend>
                     <q-icon name="mdi-account" color="indigo" />
                   </template>
                   <template v-slot:append>
-                    <div 
-                      v-if="lastName" 
+                    <div
+                      v-if="lastName"
                       class="cursor-pointer"
                       @click="lastName = ''"
                       tabindex="-1"
@@ -72,7 +72,7 @@
                 </q-input>
               </div>
             </div>
-            
+
             <q-input
               filled
               v-model="username"
@@ -81,24 +81,19 @@
               color="indigo"
               bg-color="indigo-2"
               dense
-              :rules="[val => !!val || 'Username is required']"
+              :rules="[(val) => !!val || 'Username is required']"
               lazy-rules
             >
               <template v-slot:prepend>
                 <q-icon name="mdi-account-circle" color="indigo" />
               </template>
               <template v-slot:append>
-                <div 
-                  v-if="username" 
-                  class="cursor-pointer"
-                  @click="username = ''"
-                  tabindex="-1"
-                >
+                <div v-if="username" class="cursor-pointer" @click="username = ''" tabindex="-1">
                   <q-icon name="mdi-close" color="grey-9" size="xs" />
                 </div>
               </template>
             </q-input>
-            
+
             <q-input
               filled
               v-model="email"
@@ -109,8 +104,9 @@
               bg-color="indigo-2"
               dense
               :rules="[
-                val => !!val || 'Email is required',
-                val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Please enter a valid email address'
+                (val) => !!val || 'Email is required',
+                (val) =>
+                  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Please enter a valid email address',
               ]"
               lazy-rules
             >
@@ -118,17 +114,12 @@
                 <q-icon name="mdi-email" color="indigo" />
               </template>
               <template v-slot:append>
-                <div 
-                  v-if="email" 
-                  class="cursor-pointer"
-                  @click="email = ''"
-                  tabindex="-1"
-                >
+                <div v-if="email" class="cursor-pointer" @click="email = ''" tabindex="-1">
                   <q-icon name="mdi-close" color="grey-9" size="xs" />
                 </div>
               </template>
             </q-input>
-            
+
             <q-input
               filled
               v-model="password"
@@ -139,12 +130,14 @@
               bg-color="indigo-2"
               dense
               :rules="[
-                val => !!val || 'Password is required',
-                val => val.length >= 8 || 'Password must be at least 8 characters',
-                val => /[A-Z]/.test(val) || 'Must contain at least one uppercase letter',
-                val => /[a-z]/.test(val) || 'Must contain at least one lowercase letter',
-                val => /[0-9]/.test(val) || 'Must contain at least one number',
-                val => /[!@#$%^&*(),.?:{}|<>]/.test(val) || 'Must contain at least one special character'
+                (val) => !!val || 'Password is required',
+                (val) => val.length >= 8 || 'Password must be at least 8 characters',
+                (val) => /[A-Z]/.test(val) || 'Must contain at least one uppercase letter',
+                (val) => /[a-z]/.test(val) || 'Must contain at least one lowercase letter',
+                (val) => /[0-9]/.test(val) || 'Must contain at least one number',
+                (val) =>
+                  /[!@#$%^&*(),.?:{}|<>]/.test(val) ||
+                  'Must contain at least one special character',
               ]"
               lazy-rules
             >
@@ -153,57 +146,53 @@
               </template>
               <template v-slot:append>
                 <div class="flex items-center">
-                  <q-tooltip 
+                  <q-tooltip
                     v-if="password"
-                    anchor="top middle" 
+                    anchor="top middle"
                     self="bottom middle"
                     class="password-tooltip"
                   >
                     <div class="text-caption">
                       <div class="text-weight-medium q-mb-xs">Password Requirements:</div>
                       <ul class="q-ma-sm q-pl-sm">
-                        <li :class="{'text-positive': password.length >= 8}">
+                        <li :class="{ 'text-positive': password.length >= 8 }">
                           At least 8 characters {{ password.length >= 8 ? '✓' : '' }}
                         </li>
-                        <li :class="{'text-positive': /[A-Z]/.test(password)}">
+                        <li :class="{ 'text-positive': /[A-Z]/.test(password) }">
                           One uppercase letter {{ /[A-Z]/.test(password) ? '✓' : '' }}
                         </li>
-                        <li :class="{'text-positive': /[a-z]/.test(password)}">
+                        <li :class="{ 'text-positive': /[a-z]/.test(password) }">
                           One lowercase letter {{ /[a-z]/.test(password) ? '✓' : '' }}
                         </li>
-                        <li :class="{'text-positive': /[0-9]/.test(password)}">
+                        <li :class="{ 'text-positive': /[0-9]/.test(password) }">
                           One number {{ /[0-9]/.test(password) ? '✓' : '' }}
                         </li>
-                        <li :class="{'text-positive': /[!@#$%^&*(),.?:{}|<>]/.test(password)}">
-                          One special character {{ /[!@#$%^&*(),.?:{}|<>]/.test(password) ? '✓' : '' }}
+                        <li :class="{ 'text-positive': /[!@#$%^&*(),.?:{}|<>]/.test(password) }">
+                          One special character
+                          {{ /[!@#$%^&*(),.?:{}|<>]/.test(password) ? '✓' : '' }}
                         </li>
                       </ul>
                     </div>
                   </q-tooltip>
-                  <div 
-                    v-if="password" 
+                  <div
+                    v-if="password"
                     class="cursor-pointer q-mr-xs"
                     @click="togglePasswordVisibility"
                     tabindex="-1"
                   >
-                    <q-icon 
-                      :name="showPassword ? 'mdi-eye-off' : 'mdi-eye'" 
-                      color="grey-9" 
-                      size="xs" 
+                    <q-icon
+                      :name="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                      color="grey-9"
+                      size="xs"
                     />
                   </div>
-                  <div 
-                    v-if="password" 
-                    class="cursor-pointer"
-                    @click="password = ''"
-                    tabindex="-1"
-                  >
+                  <div v-if="password" class="cursor-pointer" @click="password = ''" tabindex="-1">
                     <q-icon name="mdi-close" color="grey-9" size="xs" />
                   </div>
                 </div>
               </template>
             </q-input>
-          
+
             <q-input
               filled
               v-model="confirmPassword"
@@ -214,8 +203,8 @@
               bg-color="indigo-2"
               dense
               :rules="[
-                val => !!val || 'Please confirm your password',
-                val => val === password || 'Passwords do not match'
+                (val) => !!val || 'Please confirm your password',
+                (val) => val === password || 'Passwords do not match',
               ]"
               lazy-rules
             >
@@ -224,20 +213,20 @@
               </template>
               <template v-slot:append>
                 <div class="flex items-center">
-                  <div 
-                    v-if="confirmPassword" 
+                  <div
+                    v-if="confirmPassword"
                     class="cursor-pointer q-mr-xs"
                     @click="toggleConfirmPasswordVisibility"
                     tabindex="-1"
                   >
-                    <q-icon 
-                      :name="showConfirmPassword ? 'mdi-eye-off' : 'mdi-eye'" 
-                      color="grey-9" 
-                      size="xs" 
+                    <q-icon
+                      :name="showConfirmPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                      color="grey-9"
+                      size="xs"
                     />
                   </div>
-                  <div 
-                    v-if="confirmPassword" 
+                  <div
+                    v-if="confirmPassword"
                     class="cursor-pointer"
                     @click="confirmPassword = ''"
                     tabindex="-1"
@@ -247,7 +236,7 @@
                 </div>
               </template>
             </q-input>
-            
+
             <q-select
               filled
               v-model="selectedRole"
@@ -260,16 +249,16 @@
               color="indigo"
               bg-color="indigo-2"
               dense
-              :rules="[val => !!val || 'Please select a role']"
+              :rules="[(val) => !!val || 'Please select a role']"
               lazy-rules
-              style="height: 56px;"
+              style="height: 56px"
             >
               <template v-slot:prepend>
-                <q-icon name="mdi-account-switch" color="indigo"/>
+                <q-icon name="mdi-account-switch" color="indigo" />
               </template>
               <template v-slot:append>
-                <div 
-                  v-if="selectedRole" 
+                <div
+                  v-if="selectedRole"
                   class="cursor-pointer"
                   @click="selectedRole = null"
                   tabindex="-1"
@@ -281,10 +270,10 @@
           </div>
 
           <div class="q-mt-sm">
-            <q-btn 
-              type="submit" 
-              color="indigo" 
-              label="Register" 
+            <q-btn
+              type="submit"
+              color="indigo"
+              label="Register"
               class="full-width"
               :loading="isLoading"
               size="lg"
@@ -399,7 +388,7 @@ async function handleRegister() {
     password.value = '';
     confirmPassword.value = '';
     selectedRole.value = null;
-    
+
     // Reset form validation state
     registerForm.value?.resetValidation();
 

@@ -7,7 +7,7 @@
   font-family: 'Poppins', sans-serif;
 }
 
-.q-page {
+.auth-page-wrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -49,7 +49,9 @@
   background-color: #ffffff;
   padding: 10px;
   box-shadow: 0 8px 25px rgba(37, 78, 218, 0.25);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
   animation: fadeInLogo 0.8s ease-in-out;
 }
 
@@ -118,11 +120,11 @@
     flex-direction: column;
     max-width: 500px;
   }
-  
+
   .left-side {
     padding: 30px;
   }
-  
+
   .right-side {
     padding: 30px;
   }
@@ -133,20 +135,20 @@
     width: 80px;
     height: 80px;
   }
-  
+
   .app-title {
     font-size: 1.8rem;
   }
-  
+
   .login-title,
   .register-title {
     font-size: 1.8rem;
   }
-  
+
   .row {
     flex-direction: column;
   }
-  
+
   .col {
     width: 100%;
   }
