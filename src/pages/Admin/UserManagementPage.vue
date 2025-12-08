@@ -20,13 +20,14 @@
                     </template>
                   </q-input>
                 </div>
+
                 <q-btn
                   color="primary"
                   label="Refresh"
                   icon="refresh"
                   no-caps
-                  @click="fetchUsers"
-                  :loading="loading"
+                  @click="fetchData"
+                  :loading="userStore.loading"
                 />
               </div>
             </div>
@@ -38,7 +39,7 @@
                 :rows="filteredRows"
                 :columns="columns"
                 row-key="id"
-                :loading="loading"
+                :loading="userStore.loading"
                 :rows-per-page-options="[5, 10, 20]"
               >
                 <template v-slot:body-cell-status="props">
@@ -53,8 +54,9 @@
                     </q-chip>
                   </q-td>
                 </template>
+
                 <template v-slot:body>
-                  <q-tr v-if="filteredRows.length === 0 && !loading">
+                  <q-tr v-if="filteredRows.length === 0 && !userStore.loading">
                     <q-td colspan="100%" class="text-center text-grey-6">
                       No users found
                     </q-td>
@@ -71,17 +73,17 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue';
-import { api } from 'src/boot/axios';
+import { useUserStore } from 'src/stores/user-store';
 import type { User } from 'src/services/sdk';
+import type { QTableColumn } from 'quasar';
 
-const searchQuery = ref('')
-const loading = ref(false);
-const rows = ref<User[]>([]);
+const userStore = useUserStore();
+const searchQuery = ref('');
 
 const filteredRows = computed(() => {
-  if (!searchQuery.value) return rows.value;
+  if (!searchQuery.value) return userStore.users;
   const query = searchQuery.value.toLowerCase();
-  return rows.value.filter(user =>
+  return userStore.users.filter(user =>
     (user.firstName && user.firstName.toLowerCase().includes(query)) ||
     (user.lastName && user.lastName.toLowerCase().includes(query)) ||
     (user.email && user.email.toLowerCase().includes(query)) ||
@@ -89,65 +91,23 @@ const filteredRows = computed(() => {
   );
 });
 
-const columns = [
+const columns: QTableColumn[] = [
   {
     name: 'name',
-    required: true,
     label: 'Name',
-    align: 'left' as const,
+    align: 'left',
     field: (row: User) => `${row.firstName} ${row.lastName}`,
     sortable: true
   },
-  {
-    name: 'email',
-    label: 'Email',
-    align: 'left' as const,
-    field: 'email',
-    sortable: true
-  },
-  {
-    name: 'role',
-    label: 'Role',
-    align: 'left' as const,
-    field: 'role',
-    sortable: true
-  },
-  {
-    name: 'status',
-    label: 'Account Status',
-    align: 'left' as const,
-    field: 'status',
-    sortable: true
-  },
-  {
-    name: 'joined',
-    label: 'Joined',
-    align: 'left' as const,
-    field: 'createdAt',
-    sortable: true,
-    format: (val: string) => new Date(val).toLocaleDateString()
-  },
-  {
-    name: 'actions',
-    label: 'Actions',
-    align: 'center' as const,
-    field: 'actions'
-  }
-]
+  { name: 'role', label: 'Role', align: 'left', field: 'role', sortable: true },
+  { name: 'status', label: 'Account Status', align: 'left', field: 'status', sortable: true },
+];
 
-const fetchUsers = async () => {
-  loading.value = true;
-  try {
-    const { data } = await api.get('/user');
-    rows.value = data as unknown as User[];
-  } catch (error) {
-    console.error('Failed to fetch users:', error);
-  } finally {
-    loading.value = false;
-  }
+const fetchData = async () => {
+  await userStore.fetchUsers();
 };
 
-onMounted(fetchUsers);
+onMounted(fetchData);
 </script>
 
 <style scoped>
