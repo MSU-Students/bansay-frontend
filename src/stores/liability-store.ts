@@ -56,10 +56,10 @@ export const useLiabilityStore = defineStore('liability', {
     },
 
     // Officer/Admin: Get single liability by ID
-    async fetchLiabilityById(id: number): Promise<Liability> {
+    async fetchLiabilityById(idNumber: string): Promise<Liability> {
       this.loading = true;
       try {
-        const response = await BansayService.getInstance().getLiabilityById(id);
+        const response = await BansayService.getInstance().getLiabilityById(idNumber);
         this.currentLiability = response;
         return response;
       } finally {
@@ -68,13 +68,13 @@ export const useLiabilityStore = defineStore('liability', {
     },
 
     // Officer/Admin: Update a liability
-    async updateLiability(id: number, payload: UpdateLiabilityDto): Promise<Liability> {
-      return await BansayService.getInstance().updateLiability(id, payload);
+    async updateLiability(idNumber: string, payload: UpdateLiabilityDto): Promise<Liability> {
+      return await BansayService.getInstance().updateLiability(idNumber, payload);
     },
 
     // Officer/Admin: Soft delete a liability
-    async deleteLiability(id: number): Promise<void> {
-      await BansayService.getInstance().deleteLiability(id);
+    async deleteLiability(idNumber: string): Promise<void> {
+      await BansayService.getInstance().deleteLiability(idNumber);
     },
 
     // Clear store state
