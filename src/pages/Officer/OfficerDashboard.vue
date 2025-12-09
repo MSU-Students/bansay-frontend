@@ -21,48 +21,66 @@
             </q-card-actions>
           </q-card>
         </div>
-        <q-card class="dashboard-card q-mb-md">
-          <q-card-section>
-            <div class="text-h6">Verify submitted payments</div>
-            <div class="text-caption text-grey-7">
-              Review and approve student payment submissions.
-            </div>
-          </q-card-section>
-          <q-card-actions align="left">
-            <q-btn color="green-8" label="Manage payments" flat />
-          </q-card-actions>
-        </q-card>
+        <div class="q-pa-md">
+          <q-card class="dashboard-card q-mb-md">
+            <q-card-section>
+              <div class="text-h6">Verify submitted payments</div>
+              <div class="text-caption text-grey-7">
+                Review and approve student payment submissions.
+              </div>
+            </q-card-section>
+            <q-card-actions align="left">
+              <q-btn color="green-8" label="Manage payments" flat />
+            </q-card-actions>
+          </q-card>
+        </div>
       </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
       <q-page padding>
+        <div class="row items-center justify-between q-mb-md">
+          <div class="text-h4">Liabilities</div>
+        </div>
 
         <q-card>
-          <q-card-section>
-            <div class="text-h6 q-mb-md">All Student Liabilities</div>
+          <q-table
+            title="All Student Liabilities"
+            :rows="liabilityStore.liabilities"
+            :columns="columns"
+            row-key="id"
+            :loading="liabilityStore.loading"
+            :filter="filter"
+          >
+            <template v-slot:top-right>
+              <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
 
-            <q-table
-              flat
-              bordered
-              :rows="rows"
-              :columns="columns"
-              row-key="id"
-              :loading="loading"
-              :filter="filter"
-            >
-              <template v-slot:top-right>
-                <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-                  <template v-slot:append>
-                    <q-icon name="search" />
-                  </template>
-                </q-input>
-              </template>
+            <template #body="props">
+              <q-tr :props="props">
+                <q-td key="id" :props="props">
+                  {{ props.row.student?.username || 'N/A' }}
+                </q-td>
 
-              <template v-slot:body-cell-status="props">
-                <q-td :props="props">
+                <q-td key="student" :props="props">
+                  <div>{{ props.row.student?.firstName }} {{ props.row.student?.lastName }}</div>
+                </q-td>
+
+                <q-td key="type" :props="props">
+                  <q-badge color="blue-grey" :label="props.row.type" />
+                </q-td>
+
+                <q-td key="amount" :props="props">
+                  {{ formatCurrency(props.row.amount) }}
+                </q-td>
+
+                <q-td key="status" :props="props">
                   <q-chip
-                    :color="props.row.status === 'Unpaid' ? 'negative' : 'positive'"
+                    :color="getStatusColor(props.row.status)"
                     text-color="white"
                     dense
                     size="sm"
@@ -70,78 +88,64 @@
                     {{ props.row.status }}
                   </q-chip>
                 </q-td>
-              </template>
-            </q-table>
-          </q-card-section>
-        </q-card>
 
+                <q-td key="dueDate" :props="props">
+                  {{ props.row.dueDate }}
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </q-card>
       </q-page>
     </q-page-container>
   </q-layout>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useAuthStore } from 'src/stores/auth-store';
-import type { Liability } from 'src/services/sdk';
+import { useLiabilityStore } from 'src/stores/liability-store';
 import type { QTableColumn } from 'quasar';
+import type { Liability } from 'src/services/sdk';
 
-export default defineComponent({
-  name: 'OfficerDashboard',
-  setup() {
-    const leftDrawer = ref(false);
+// State
+const leftDrawer = ref(false);
+const authStore = useAuthStore();
+const liabilityStore = useLiabilityStore();
+const filter = ref('');
 
-    function selectCard(name: string) {
-      alert(`You clicked ${name}!`);
-    }
+function logout() {
+  authStore.logout();
+}
 
-    const authStore = useAuthStore();
-    function logout() {
-      authStore.logout();
-    }
+// Columns Definition
+const columns: QTableColumn[] = [
+  { name: 'id', label: 'Student ID', field: (row: Liability) => row.student?.username, align: 'left', sortable: true },
+  { name: 'student', label: 'Name', field: (row: Liability) => row.student?.lastName, align: 'left', sortable: true },
+  { name: 'type', label: 'Type', field: 'type', align: 'left', sortable: true },
+  { name: 'amount', label: 'Amount', field: 'amount', align: 'right', sortable: true },
+  { name: 'status', label: 'Status', field: 'status', align: 'center', sortable: true },
+  { name: 'dueDate', label: 'Due Date', field: 'dueDate', align: 'left', sortable: true },
+];
 
-    const loading = ref(false);
-    const rows = ref<Liability[]>([]);
-    const filter = ref('');
+// Helpers
+function formatCurrency(value: number | undefined) {
+  if (value === undefined) return '₱0.00';
+  return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(value);
+}
 
-    const columns: QTableColumn[] = [
-      {
-        name: 'studentId',
-        label: 'Student ID',
-        align: 'left',
-        field: (row: Liability) => row.student?.username || 'N/A',
-        sortable: true
-      },
-      {
-        name: 'name',
-        label: 'Name',
-        align: 'left',
-        field: (row: Liability) => `${row.student?.firstName} ${row.student?.lastName}`,
-        sortable: true
-      },
-      { name: 'type', label: 'Type', align: 'left', field: 'type', sortable: true },
-      {
-        name: 'amount',
-        label: 'Amount',
-        align: 'right',
-        field: 'amount',
-        format: (val: number) => `₱ ${val.toLocaleString()}`,
-        sortable: true
-      },
-      { name: 'status', label: 'Status', align: 'center', field: 'status', sortable: true },
-      { name: 'dueDate', label: 'Due Date', align: 'left', field: 'dueDate', sortable: true },
-    ];
+function getStatusColor(status: string) {
+  switch (status) {
+    case 'Paid': return 'positive';
+    case 'Unpaid': return 'negative';
+    case 'Cancelled': return 'grey';
+    default: return 'grey';
+  }
+}
 
-    return {
-      leftDrawer,
-      selectCard,
-      logout,
-      loading,
-      rows,
-      columns,
-      filter
-    };
-  },
+// Logic: Fetch Data on Mount
+onMounted(async () => {
+  await liabilityStore.fetchAllLiabilities();
 });
 </script>
 

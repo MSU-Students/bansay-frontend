@@ -13,6 +13,9 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async fetchCurrentUser() {
+      if (this.currentUser) {
+        return this.currentUser;
+      }
       // Fetch user data from backend instead of localStorage for data privacy
       const accessToken = localStorage.getItem('accessToken');
       if (accessToken) {
@@ -33,13 +36,29 @@ export const useAuthStore = defineStore('auth', {
       }
       return response;
     },
+    
     async register(data: UserRegisterDto) {
       return await BansayService.getInstance().registerUser(data);
     },
 
     logout() {
-      BansayService.getInstance().logout();
-      this.currentUser = null;
+      try {
+        // Call the logout method on the service
+        BansayService.getInstance().logout();
+      } catch (error) {
+        console.error('Error during logout:', error);
+      } finally {
+        // Clear local state regardless of API call success
+        this.currentUser = null;
+        
+        // Clear localStorage
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user_role');
+        
+        // Force reload to clear any cached state
+        window.location.href = '/auth/login';
+      }
     }
   },
 });

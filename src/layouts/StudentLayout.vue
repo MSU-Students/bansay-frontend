@@ -7,6 +7,7 @@
       :user-email="currentUserEmail"
       :user-avatar="userAvatarUrl"
       :app-name="appName"
+      :logo="logoPath"
       :show-menu-button="true"
       @toggle-left-drawer="toggleLeftDrawer"
       @profile-clicked="handleProfile"
@@ -49,6 +50,7 @@ const userAvatarUrl = computed(() => {
 
 // App config
 const appName = 'Bansay';
+const logoPath = '~assets/logo.png';
 
 // Event handlers
 const toggleLeftDrawer = () => {
