@@ -348,7 +348,7 @@ export default defineComponent({
     const markAsPaid = async (liability: Liability) => {
       try {
         $q.loading.show();
-        await liabilityStore.updateLiability(liability.id, { status: 'Paid' });
+        await liabilityStore.updateLiability(String(liability.id), { status: 'Paid' });
         $q.notify({
           type: 'positive',
           message: 'Liability marked as paid successfully',

@@ -15,7 +15,7 @@
 
       <!-- Logo -->
       <q-avatar class="q-ml-sm">
-        <img :src="Bansaylogo">
+        <img :src="logoSrc">
       </q-avatar>
 
       <!-- Title -->
@@ -160,7 +160,7 @@ import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRoute } from 'vue-router';
 import { getMenuForRole, type MenuItem } from 'src/data/sidebarMenu';
-import Bansaylogo from 'assets/logo.png';
+import BansayLogo from 'assets/logo.png';
 
 interface Props {
   // User data
@@ -200,6 +200,9 @@ const route = useRoute();
 const showLogoutDialog = ref(false);
 const drawer = ref(false);
 const miniState = ref(true);
+
+// Expose logo to template
+const logoSrc = ref(BansayLogo);
 
 // Get menu items based on user role
 const menuItems = computed<MenuItem[]>(() => {

@@ -77,7 +77,7 @@
 
         <div class="col-12 col-md-2">
           <q-btn
-            label="Generate & Export"
+            :label="'Export ' + exportFormat"
             color="primary"
             icon="download"
             class="full-width"
@@ -100,7 +100,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from 'vue'; // Import 'computed'
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import { useQuasar } from 'quasar';
 
 // Define the shape for the date range model
@@ -113,6 +113,9 @@ export default defineComponent({
   name: 'ReportsPage',
   setup() {
     const $q = useQuasar();
+    
+    // --- Export Format ---
+    const exportFormat = ref('CSV'); // Changed from array to string with default value
 
     // --- State for KPI Cards (Mock Data) ---
     const totalUnpaidAmount = ref(2000.5);
@@ -128,8 +131,6 @@ export default defineComponent({
       to: new Date().toISOString().substring(0, 10).replace(/-/g, '/'),
     });
 
-    const exportFormat = ref('CSV');
-
     const reportOptions = [
       'Liability Status Summary',
       'Detailed Transactions Report',
@@ -137,7 +138,7 @@ export default defineComponent({
       'Pending Appeals & Verifications',
     ];
 
-    // 2. NEW: Create a computed property for display in the q-input
+    // 2. Create a computed property for display in the q-input
     const dateRangeLabel = computed(() => {
       // Return a clean string representation for the q-input field
       if (dateRange.value.from && dateRange.value.to) {

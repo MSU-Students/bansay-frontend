@@ -114,7 +114,7 @@ const approveUser = async (userId: string | number) => {
 const rejectUser = async (userId: string | number) => {
   rejectingUserId.value = userId;
   try {
-    await BansayService.getInstance().patchUser(userId, { status: 'Disabled' });
+    await BansayService.getInstance().patchUser(String(userId), { status: 'Disabled' });
 
     $q.notify({
       type: 'positive',

@@ -17,15 +17,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/Auth/register/RegisterPage.vue'),
         name: 'register',
       },
-
-      // These dashboard routes are redundant and removed to avoid conflict:
-      // { path: 'student-dashboard', component: () => import('pages/student/StudentDashboard.vue') },
-      // { path: 'officer-dashboard', component: () => import('pages/Officer/OfficerDashboard.vue') },
-      // {
-      //   path: 'student-dashboard',
-      //   component: () => import('pages/student/StudentDashboard.vue'),
-      //   meta: { requiresAuth: true, roles: ['Student'] },
-      // },
     ],
   },
 
@@ -42,22 +33,22 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'dashboard',
-        component: () => import('pages/student/StudentDashboard.vue'),
+        component: () => import('pages/Student/StudentDashboard.vue'),
         name: 'student-dashboard'
       },
       {
         path: 'liability',
-        component: () => import('pages/student/LiabilitiesSummary.vue'),
+        component: () => import('pages/Student/LiabilitiesSummary.vue'),
         name: 'student-liability'
       },
       {
         path: 'payment',
-        component: () => import('pages/student/SettlePaymentPage.vue'),
+        component: () => import('pages/Student/SettlePaymentPage.vue'),
         name: 'student-payment'
       },
       {
         path: 'appeal',
-        component: () => import('pages/student/AppealSubmissionPage.vue'),
+        component: () => import('pages/Student/AppealSubmissionPage.vue'),
         name: 'student-appeal'
       }
 
