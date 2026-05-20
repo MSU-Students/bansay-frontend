@@ -40,7 +40,7 @@ export interface UserApiResponse {
 
 const isDevEnv = process.env.ENV == 'development';
 const baseUrl: string = isDevEnv
-  ? 'http://localhost:3030'
+  ? 'http://localhost:3000'
   : 'https://6f12ecy5s4.execute-api.us-east-2.amazonaws.com/prod';
 export interface PendingUser {
   id?: number;
